@@ -14,75 +14,148 @@ function MainPages({ onRestaurantClick }) {
   const restaurants = [
     {
       id: 1,
-      thumbnail: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600",
+      thumbnail:
+        "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600",
       name: "천안곱창맛집",
       category: "한식",
       average_rating: 4.3,
       location: "충남 천안시 동남구",
-      description: "천안에서 유명한 곱창 맛집입니다. 신선한 재료로 매일 준비합니다.",
+      description:
+        "천안에서 유명한 곱창 맛집입니다. 신선한 재료로 매일 준비합니다.",
       popular_menu: "곱창볶음, 막창구이, 볶음밥",
       review_count: 128,
     },
     {
       id: 2,
-      thumbnail: "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600",
+      thumbnail:
+        "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600",
       name: "스시오마카세",
       category: "일식",
       average_rating: 4.9,
       location: "충남 천안시 서북구",
-      description: "셰프가 직접 엄선한 신선한 해산물로 만드는 정통 오마카세 스시.",
+      description:
+        "셰프가 직접 엄선한 신선한 해산물로 만드는 정통 오마카세 스시.",
       popular_menu: "오마카세 코스, 연어초밥, 참치대뱃살",
       review_count: 87,
     },
     {
       id: 3,
-      thumbnail: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
       name: "파스타공방",
       category: "양식",
       average_rating: 4.6,
       location: "충남 천안시 동남구",
-      description: "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
       popular_menu: "까르보나라, 봉골레, 토마토파스타",
       review_count: 54,
     },
     {
       id: 4,
-      thumbnail: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
       name: "파스타공방",
       category: "양식",
       average_rating: 4.3,
       location: "충남 천안시 동남구",
-      description: "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
       popular_menu: "까르보나라, 봉골레, 토마토파스타",
       review_count: 54,
     },
     {
       id: 5,
-      thumbnail: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
       name: "파스타공방",
       category: "양식",
       average_rating: 4.3,
       location: "충남 천안시 동남구",
-      description: "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
       popular_menu: "까르보나라, 봉골레, 토마토파스타",
       review_count: 54,
     },
     {
       id: 6,
-      thumbnail: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
       name: "파스타공방",
       category: "양식",
       average_rating: 4.3,
       location: "충남 천안시 동남구",
-      description: "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
       popular_menu: "까르보나라, 봉골레, 토마토파스타",
       review_count: 54,
     },
   ];
 
   const dongList = {
-    dongnam: ["다가동", "광덕면", "구성동", "구룡동", "대흥동", "동면", "목천읍", "문화동", "문성동", "병천면", "봉명동", "북면", "사직동", "삼룡동", "성남면", "성황동", "수신면", "신방동", "신부동", "신안동", "쌍용동", "안서동", "영성동", "오룡동", "용곡동", "원성1동", "원성2동", "원성동", "유량동", "일봉동", "중앙동", "청당동", "청룡동", "청수동", "풍세면"],
-    seobuk: ["두정동", "백석동", "부대동", "부성1동", "부성2동", "불당1동", "불당2동", "불당동", "성거읍", "성성동", "성정1동", "성정2동", "성정동", "성환읍", "신당동", "쌍용1동", "쌍용2동", "쌍용3동", "쌍용동", "업성동", "와촌동", "입장면", "직산읍", "차암동"],
+    dongnam: [
+      "다가동",
+      "광덕면",
+      "구성동",
+      "구룡동",
+      "대흥동",
+      "동면",
+      "목천읍",
+      "문화동",
+      "문성동",
+      "병천면",
+      "봉명동",
+      "북면",
+      "사직동",
+      "삼룡동",
+      "성남면",
+      "성황동",
+      "수신면",
+      "신방동",
+      "신부동",
+      "신안동",
+      "쌍용동",
+      "안서동",
+      "영성동",
+      "오룡동",
+      "용곡동",
+      "원성1동",
+      "원성2동",
+      "원성동",
+      "유량동",
+      "일봉동",
+      "중앙동",
+      "청당동",
+      "청룡동",
+      "청수동",
+      "풍세면",
+    ],
+    seobuk: [
+      "두정동",
+      "백석동",
+      "부대동",
+      "부성1동",
+      "부성2동",
+      "불당1동",
+      "불당2동",
+      "불당동",
+      "성거읍",
+      "성성동",
+      "성정1동",
+      "성정2동",
+      "성정동",
+      "성환읍",
+      "신당동",
+      "쌍용1동",
+      "쌍용2동",
+      "쌍용3동",
+      "쌍용동",
+      "업성동",
+      "와촌동",
+      "입장면",
+      "직산읍",
+      "차암동",
+    ],
   };
 
   const sortedRestaurants = [...restaurants].sort((a, b) => {
@@ -124,7 +197,9 @@ function MainPages({ onRestaurantClick }) {
                   <option value="">동네 선택</option>
                   {selectedGu &&
                     dongList[selectedGu].map((dong) => (
-                      <option key={dong} value={dong}>{dong}</option>
+                      <option key={dong} value={dong}>
+                        {dong}
+                      </option>
                     ))}
                 </select>
               </div>
@@ -142,19 +217,37 @@ function MainPages({ onRestaurantClick }) {
         </section>
 
         <div className="category-container">
-          <button><p>🍚</p>한식</button>
-          <button><p>🥢</p>중식</button>
-          <button><p>🍱</p>일식</button>
-          <button><p>🍝</p>양식</button>
-          <button><p>☕</p>카페</button>
-          <button><p>🍺</p>술집</button>
-          <button><p>🍰</p>디저트</button>
-          <button><p>🍔</p>패스트푸드</button>
+          <button>
+            <p>🍚</p>한식
+          </button>
+          <button>
+            <p>🥢</p>중식
+          </button>
+          <button>
+            <p>🍱</p>일식
+          </button>
+          <button>
+            <p>🍝</p>양식
+          </button>
+          <button>
+            <p>☕</p>카페
+          </button>
+          <button>
+            <p>🍺</p>술집
+          </button>
+          <button>
+            <p>🍰</p>디저트
+          </button>
+          <button>
+            <p>🍔</p>패스트푸드
+          </button>
         </div>
 
         <div className="popular_menu_list">
           <div className="popular_menu_list_title">
-            <p><LuTrendingUp /> 지금 가장 인기있는 맛집 🔥</p>
+            <p>
+              <LuTrendingUp /> 지금 가장 인기있는 맛집 🔥
+            </p>
             <select
               className="popular_menu_select"
               value={sortType}
