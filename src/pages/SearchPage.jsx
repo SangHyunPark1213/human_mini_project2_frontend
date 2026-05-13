@@ -1,6 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import "./SearchPage.css";
 import { useState } from "react";
+import RestaurantCard from "../components/restaurant/RestaurantCard";
 
 function SearchPage() {
   const [searchParams] = useSearchParams();
@@ -40,6 +41,119 @@ function SearchPage() {
       prev.filter((item) => item !== situation)
     );
   };
+
+  const restaurants = [
+    {
+      id: 1,
+      thumbnail:
+        "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600",
+      name: "천안곱창맛집",
+      category: "한식",
+      average_rating: 4.3,
+      location: "충남 천안시 동남구",
+      description:
+        "천안에서 유명한 곱창 맛집입니다. 신선한 재료로 매일 준비합니다.",
+      popular_menu: "곱창볶음, 막창구이, 볶음밥",
+      review_count: 128,
+      situations: ["혼밥", "가성비"],
+    },
+    {
+      id: 2,
+      thumbnail:
+        "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600",
+      name: "스시오마카세",
+      category: "일식",
+      average_rating: 4.9,
+      location: "충남 천안시 서북구",
+      description:
+        "셰프가 직접 엄선한 신선한 해산물로 만드는 정통 오마카세 스시.",
+      popular_menu: "오마카세 코스, 연어초밥, 참치대뱃살",
+      review_count: 87,
+      situations: ["특별한 날", "데이트"],
+    },
+    {
+      id: 3,
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      name: "파스타공방",
+      category: "양식",
+      average_rating: 4.6,
+      location: "충남 천안시 동남구",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      popular_menu: "까르보나라, 봉골레, 토마토파스타",
+      review_count: 54,
+      situations: ["야식/늦은 밤"],
+    },
+    {
+      id: 4,
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      name: "파스타공방",
+      category: "양식",
+      average_rating: 4.3,
+      location: "충남 천안시 동남구",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      popular_menu: "까르보나라, 봉골레, 토마토파스타",
+      review_count: 54,
+      situations: ["가족 모임"],
+    },
+    {
+      id: 5,
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      name: "파스타공방",
+      category: "양식",
+      average_rating: 4.3,
+      location: "충남 천안시 동남구",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      popular_menu: "까르보나라, 봉골레, 토마토파스타",
+      review_count: 54,
+      situations: ["특별한 날", "친구/회식"],
+    },
+    {
+      id: 6,
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      name: "파스타공방",
+      category: "양식",
+      average_rating: 4.3,
+      location: "충남 천안시 동남구",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      popular_menu: "까르보나라, 봉골레, 토마토파스타",
+      review_count: 54,
+      situations: ["데이트", "뷰 맛집"],
+    },
+  ];
+
+  const filteredRestaurants = restaurants.filter((restaurant) => {
+    const matchRegion =
+      !selectedDong && !selectedGu
+        ? true
+        : selectedDong
+        ? restaurant.location.includes(selectedDong)
+        : restaurant.location.includes(selectedGu);
+
+    const matchCategory =
+      !selectedCategory || restaurant.category === selectedCategory;
+
+    const matchKeyword =
+      !keyword ||
+      restaurant.name.includes(keyword) ||
+      restaurant.category.includes(keyword) ||
+      restaurant.popular_menu.includes(keyword);
+
+    const matchSituation =
+      selectedSituations.length === 0 ||
+      selectedSituations.some((situation) =>
+        restaurant.situations?.includes(situation)
+      );
+
+    return matchRegion && matchCategory && matchKeyword && matchSituation;
+  });
 
   return (
     <main className="search-page">
@@ -154,7 +268,7 @@ function SearchPage() {
       <section className="result-section">
         <div className="result-header">
           <div>
-            <strong>총 0개의 맛집</strong>
+            <strong>총 {filteredRestaurants.length}개의 맛집</strong>
 
             <div className="selected-tags">
               <span>
@@ -182,6 +296,15 @@ function SearchPage() {
             <option>리뷰 많은 순</option>
             <option>별점 높은 순</option>
           </select>
+        </div>
+        <div className="search-result-grid">
+          {filteredRestaurants.map((restaurant) => (
+            <RestaurantCard
+              key={restaurant.id}
+              restaurant={restaurant}
+              onClick={() => {}}
+            />
+          ))}
         </div>
 
       </section>

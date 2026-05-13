@@ -97,7 +97,7 @@
 }
 
 .result-header strong {
-  display: block;
+  display: flex;
   margin-left: 2px;
 }
 
@@ -138,4 +138,13 @@
   cursor: pointer;
   font-size: 14px;
   padding: 0;
+}
+
+.search-result-grid {
+  padding-top: 20px;
+  width: 1090px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 21px;
 }
