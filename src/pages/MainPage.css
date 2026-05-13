@@ -14,7 +14,7 @@
   background: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0.35) 0%,
-    rgba(255, 255, 255, 0.45) 45%,
+    rgba(255, 255, 255, 0.35) 45%,
     rgba(255, 255, 255, 1.9) 100%
   );
 }
@@ -33,11 +33,18 @@
   font-weight: 900;
   margin-bottom: 18px;
   color: white;
+  text-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.5),
+    0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 .hero-overlay p {
   font-size: 18px;
   margin-bottom: 36px;
+  font-weight: 600;
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.5),
+    0 6px 18px rgba(0, 0, 0, 0.45);
 }
 
 .hero-search {
@@ -63,7 +70,7 @@
 
 .region-select-wrap {
   width: 230px;
-  padding-left: 24px;
+  padding-left: 20px;
   border-right: 1px solid #e5e7eb;
 }
 
@@ -159,10 +166,73 @@
   display: flex;
 }
 
+.popular_menu_list_title p svg {
+  color: #ff6b3d;
+}
+
 .popular_menu_select {
   border: none;
   outline: none;
   width: 100px;
   cursor: pointer;
   color: #333;
+}
+
+.restaurant-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 320px);
+  gap: 30px;
+  justify-content: center;
+}
+
+.rank-card-wrap {
+  position: relative;
+  width: 323px;
+}
+
+.rank-badge {
+  position: absolute;
+  top: 14px;
+  left: 24px;
+  z-index: 20;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  background: linear-gradient(135deg, #ffc857, #ffb703);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.region-select-wrap {
+  width: 300px;
+}
+
+.region-select,
+.dong-select {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #9ca3af;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.region-select {
+  width: 100px;
+}
+
+.dong-select {
+  width: 100px;
+}
+
+.dong-select:disabled {
+  color: #c4c4c4;
+  cursor: default;
 }

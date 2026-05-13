@@ -412,8 +412,8 @@
 }
 
 .auth-field label {
-  width: 84px;
-  min-width: 84px;
+  width: 90px;
+  min-width: 90px;
 
   font-size: 14px;
   font-weight: 700;
@@ -423,6 +423,8 @@
 
   padding-top: 14px;
   line-height: 1;
+
+  white-space: nowrap;
 }
 
 .auth-field-column {
