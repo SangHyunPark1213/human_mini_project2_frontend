@@ -1,15 +1,18 @@
 import { useState } from "react";
 import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Header from "./components/layout/Header";
 import AuthModal from "./components/common/AuthModal";
 import MainPage from "./pages/MainPage";
 import RestaurantDetailPage from "./components/restaurant/RestaurantDetailPage";
 import ReviewWritePage from "./pages/ReviewWritePage";
+import SearchPage from "./pages/SearchPage"; // ✅ 검색 브랜치꺼 추가
 
 function App() {
   const [modal, setModal] = useState(null);
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
-  const [writingReview, setWritingReview] = useState(false);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null); // ✅ HEAD꺼 유지
+  const [writingReview, setWritingReview] = useState(false); // ✅ HEAD꺼 유지
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("loginUser");
     return saved ? JSON.parse(saved) : null;
@@ -27,7 +30,7 @@ function App() {
     setModal(null);
   };
 
-  // 리뷰 작성 페이지
+  // 리뷰 작성 페이지 (조건부 렌더링 유지)
   if (writingReview) {
     window.scrollTo(0, 0);
     return (
@@ -39,7 +42,7 @@ function App() {
     );
   }
 
-  // 상세 페이지
+  // 식당 상세 페이지 (조건부 렌더링 유지)
   if (selectedRestaurant) {
     window.scrollTo(0, 0);
     return (
@@ -61,7 +64,7 @@ function App() {
             onClose={() => setModal(null)}
             onLoginSuccess={(userData) => {
               handleLoginSuccess(userData);
-              setWritingReview(true); // 로그인 성공 시 바로 리뷰 작성으로 이동
+              setWritingReview(true);
             }}
             onSwitchMode={setModal}
           />
@@ -71,7 +74,7 @@ function App() {
   }
 
   return (
-    <div>
+    <BrowserRouter>
       <Header
         isLoggedIn={!!user}
         user={user}
@@ -80,7 +83,14 @@ function App() {
         onLogoutClick={handleLogout}
       />
 
-      <MainPage onRestaurantClick={setSelectedRestaurant} />
+      {/* ✅ 검색 브랜치의 Routes 구조 채택 + MainPage에 클릭 핸들러도 유지 */}
+      <Routes>
+        <Route
+          path="/"
+          element={<MainPage onRestaurantClick={setSelectedRestaurant} />}
+        />
+        <Route path="/search" element={<SearchPage />} />
+      </Routes>
 
       {modal && (
         <AuthModal
@@ -90,7 +100,7 @@ function App() {
           onSwitchMode={setModal}
         />
       )}
-    </div>
+    </BrowserRouter>
   );
 }
 
