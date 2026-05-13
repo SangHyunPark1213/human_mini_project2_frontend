@@ -9,21 +9,7 @@ function SearchPage() {
   const keyword = searchParams.get("keyword") || "";
   const category = searchParams.get("category") || "";
   const [selectedCategory, setSelectedCategory] = useState(category || "");
-
-  const [selectedSituation, setSelectedSituation] = useState("");
-
-  // const handleSituationClick = (situation) => {
-  //   setSelectedSituation(situation);
-  // };
-
-  const params = new URLSearchParams();
-
-  if (selectedCategory) params.set("category", selectedCategory);
-  if (selectedDong) params.set("region", selectedDong);
-  if (selectedSituation) params.set("situation", selectedSituation);
-  if (keyword) params.set("keyword", keyword);
-
-  fetch(`/api/restaurants?${params.toString()}`);
+  const [selectedSituations, setSelectedSituations] = useState([]);
 
   const dongList = {
   동남구: ["다가동", "광덕면", "구성동", "구룡동", "대흥동", "동면", "목천읍", "문화동", "문성동", "병천면", "봉명동", "북면", "사직동", "삼룡동", "성남면", "성황동", "수신면", "신방동", "신부동", "신안동", "쌍용동", "안서동", "영성동", "오룡동", "용곡동", "원성1동", "원성2동", "원성동", "유량동", "일봉동", "중앙동", "청당동", "청룡동", "청수동", "풍세면"],
@@ -40,6 +26,20 @@ function SearchPage() {
   const [selectedDong, setSelectedDong] = useState(
     region === "천안전체" ? "" : region
   );
+
+  const toggleSituation = (situation) => {
+    setSelectedSituations((prev) =>
+      prev.includes(situation)
+        ? prev.filter((item) => item !== situation)
+        : [...prev, situation]
+    );
+  };
+
+  const removeSituation = (situation) => {
+    setSelectedSituations((prev) =>
+      prev.filter((item) => item !== situation)
+    );
+  };
 
   return (
     <main className="search-page">
@@ -121,25 +121,33 @@ function SearchPage() {
         <div className="filter-group">
           <p className="filter-title">상황 / 테마</p>
           <button
-            className={selectedSituation === "혼밥" ? "filter-active" : ""}
-            onClick={() => setSelectedSituation("혼밥")}
+            className={selectedSituations.includes("혼밥") ? "filter-active" : ""}
+            onClick={() => toggleSituation("혼밥")}
           >
             🍱 혼밥
           </button>
           <button
-            className={selectedSituation === "데이트" ? "filter-active" : ""}
-            onClick={() => setSelectedSituation("데이트")}
+            className={selectedSituations.includes("데이트") ? "filter-active" : ""}
+            onClick={() => toggleSituation("데이트")}
           >
             💑 데이트
           </button>
-          <button className={selectedSituation === "데이트" ? "filter-active" : ""} onClick={() => setSelectedSituation("데이트")}>👨‍👩‍👧 가족 모임</button>
-          <button>🍻 친구/회식</button>
-          <button>💰 가성비</button>
-          <button>🎉 특별한 날</button>
-          <button>🌙 야식/늦은 밤</button>
-          <button>🤫 조용한 곳</button>
-          <button>🌅 뷰 맛집</button>
-          <button>👥 단체/모임</button>
+          <button className={selectedSituations.includes("가족 모임") ? "filter-active" : ""}
+            onClick={() => toggleSituation("가족 모임")}>👨‍👩‍👧 가족 모임</button>
+          <button className={selectedSituations.includes("친구/회식") ? "filter-active" : ""}
+            onClick={() => toggleSituation("친구/회식")}>🍻 친구/회식</button>
+          <button className={selectedSituations.includes("가성비") ? "filter-active" : ""}
+            onClick={() => toggleSituation("가성비")}>💰 가성비</button>
+          <button className={selectedSituations.includes("특별한 날") ? "filter-active" : ""}
+            onClick={() => toggleSituation("특별한 날")}>🎉 특별한 날</button>
+          <button className={selectedSituations.includes("야식/늦은 밤") ? "filter-active" : ""}
+            onClick={() => toggleSituation("야식/늦은 밤")}>🌙 야식/늦은 밤</button>
+          <button className={selectedSituations.includes("조용한 곳") ? "filter-active" : ""}
+            onClick={() => toggleSituation("조용한 곳")}>🤫 조용한 곳</button>
+          <button className={selectedSituations.includes("뷰 맛집") ? "filter-active" : ""}
+            onClick={() => toggleSituation("뷰 맛집")}>🌅 뷰 맛집</button>
+          <button className={selectedSituations.includes("단체/모임") ? "filter-active" : ""}
+            onClick={() => toggleSituation("단체/모임")}>👥 단체/모임</button>
         </div>
       </section>
 
@@ -155,6 +163,17 @@ function SearchPage() {
 
               {selectedCategory && <span>{selectedCategory}</span>}
               {keyword && <span>{keyword}</span>}
+              {selectedSituations.map((situation) => (
+                <span key={situation} className="tag-removable">
+                  {situation}
+                  <button
+                    type="button"
+                    onClick={() => removeSituation(situation)}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
             </div>
           </div>
 
