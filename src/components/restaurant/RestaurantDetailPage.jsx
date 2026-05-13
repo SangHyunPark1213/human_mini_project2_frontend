@@ -55,7 +55,7 @@ const RatingBar = ({ count, total, star }) => {
   );
 };
 
-const RestaurantDetailPage = ({ restaurant, onClose, isAdmin = false }) => {
+const RestaurantDetailPage = ({ restaurant, onClose, onWriteReview, isAdmin = false }) => {
   const [activeImg, setActiveImg] = useState(0);
 
   if (!restaurant) return null;
@@ -385,7 +385,7 @@ const RestaurantDetailPage = ({ restaurant, onClose, isAdmin = false }) => {
               리뷰 {totalReviews.toLocaleString()}개
             </h2>
 
-            <button className="write-review-btn">✏ 리뷰 작성하기</button>
+            <button className="write-review-btn" onClick={onWriteReview}>✏ 리뷰 작성하기</button>
           </div>
 
           <div className="reviews-list">

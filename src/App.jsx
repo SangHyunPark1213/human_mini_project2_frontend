@@ -4,10 +4,12 @@ import Header from "./components/layout/Header";
 import AuthModal from "./components/common/AuthModal";
 import MainPage from "./pages/MainPage";
 import RestaurantDetailPage from "./components/restaurant/RestaurantDetailPage";
+import ReviewWritePage from "./pages/ReviewWritePage";
 
 function App() {
   const [modal, setModal] = useState(null);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [writingReview, setWritingReview] = useState(false);
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("loginUser");
     return saved ? JSON.parse(saved) : null;
@@ -25,15 +27,46 @@ function App() {
     setModal(null);
   };
 
-  // 상세 페이지가 선택되면 상세 페이지만 렌더링
-  if (selectedRestaurant) {
-    // 상세 페이지 진입 시 스크롤 맨 위로 초기화
+  // 리뷰 작성 페이지
+  if (writingReview) {
     window.scrollTo(0, 0);
     return (
-      <RestaurantDetailPage
+      <ReviewWritePage
         restaurant={selectedRestaurant}
-        onClose={() => setSelectedRestaurant(null)}
+        user={user}
+        onClose={() => setWritingReview(false)}
       />
+    );
+  }
+
+  // 상세 페이지
+  if (selectedRestaurant) {
+    window.scrollTo(0, 0);
+    return (
+      <>
+        <RestaurantDetailPage
+          restaurant={selectedRestaurant}
+          onClose={() => setSelectedRestaurant(null)}
+          onWriteReview={() => {
+            if (!user) {
+              setModal("login");
+            } else {
+              setWritingReview(true);
+            }
+          }}
+        />
+        {modal && (
+          <AuthModal
+            mode={modal}
+            onClose={() => setModal(null)}
+            onLoginSuccess={(userData) => {
+              handleLoginSuccess(userData);
+              setWritingReview(true); // 로그인 성공 시 바로 리뷰 작성으로 이동
+            }}
+            onSwitchMode={setModal}
+          />
+        )}
+      </>
     );
   }
 
