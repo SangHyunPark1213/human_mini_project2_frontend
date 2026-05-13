@@ -1,0 +1,19 @@
+.category-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #dfe6e9;
+  background: #fff;
+  color: #2d3436;
+  border-radius: 24px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.category-chip.active,
+.category-chip:hover {
+  background: #ff6b35;
+  color: white;
+  border-color: #ff6b35;
+}

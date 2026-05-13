@@ -1,0 +1,28 @@
+.rating-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #dfe6e9;
+}
+
+.rating-stars span.filled {
+  color: #fdcb6e;
+}
+
+.rating-stars strong {
+  margin-left: 6px;
+  color: #2d3436;
+  font-size: 14px;
+}
+
+.rating-sm {
+  font-size: 13px;
+}
+
+.rating-md {
+  font-size: 16px;
+}
+
+.rating-lg {
+  font-size: 24px;
+}
