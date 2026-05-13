@@ -47,6 +47,12 @@
   white-space: nowrap;
 }
 
+.logo-img {
+  height: 72px;
+  width: auto;
+  object-fit: contain;
+}
+
 /* 오른쪽 버튼 */
 .header-nav {
   margin-left: auto;

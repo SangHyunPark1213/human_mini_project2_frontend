@@ -5,10 +5,7 @@ import { FiMapPin } from "react-icons/fi";
 import { LuTrendingUp } from "react-icons/lu";
 
 import RestaurantCard from "../components/restaurant/RestaurantCard";
-import RestaurantDetailModal from "../components/restaurant/RestaurantDetailModal";
-
-function MainPages() {
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+function MainPages({ onRestaurantClick }) {
 
   const restaurants = [
     {
@@ -175,7 +172,7 @@ function MainPages() {
                 <RestaurantCard
                   key={restaurant.id}
                   restaurant={restaurant}
-                  onClick={setSelectedRestaurant}
+                  onClick={onRestaurantClick}
                 />
               ))}
           </div> 
@@ -183,12 +180,6 @@ function MainPages() {
         </div>
       </div>
 
-      {selectedRestaurant && (
-        <RestaurantDetailModal
-          restaurant={selectedRestaurant}
-          onClose={() => setSelectedRestaurant(null)}
-        />
-      )}
     </main>
   );
 }
