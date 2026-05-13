@@ -1,12 +1,15 @@
 import { useState } from "react";
 import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Header from "./components/layout/Header";
 import AuthModal from "./components/common/AuthModal";
 import MainPage from "./pages/MainPage";
+import SearchPage from "./pages/SearchPage";
 
 function App() {
   const [modal, setModal] = useState(null);
-  // 새로고침 시 localStorage에서 유저 정보 복원
+
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("loginUser");
     return saved ? JSON.parse(saved) : null;
@@ -25,7 +28,7 @@ function App() {
   };
 
   return (
-    <div>
+    <BrowserRouter>
       <Header
         isLoggedIn={!!user}
         user={user}
@@ -34,7 +37,10 @@ function App() {
         onLogoutClick={handleLogout}
       />
 
-      <MainPage />
+      <Routes>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/search" element={<SearchPage />} />
+      </Routes>
 
       {modal && (
         <AuthModal
@@ -44,7 +50,7 @@ function App() {
           onSwitchMode={setModal}
         />
       )}
-    </div>
+    </BrowserRouter>
   );
 }
 
