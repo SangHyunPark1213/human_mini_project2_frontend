@@ -1,4 +1,5 @@
 import "./Header.css";
+import logo from "../../assets/logo.png";
 
 const Header = ({
   onLoginClick,
@@ -17,44 +18,7 @@ const Header = ({
           tabIndex={0}
           aria-label="홈으로 이동"
         >
-          <span className="logo-icons">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#ff6b35"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
-
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#ff6b35"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M15 11h.01" />
-              <path d="M11 15h.01" />
-              <path d="M16 16h.01" />
-              <path d="m2 16 20 6-6-20A20 20 0 0 0 2 16" />
-              <path d="M5.71 17.11a17.04 17.04 0 0 1 11.4-11.4" />
-            </svg>
-          </span>
-
-          <div className="logo-text-wrap">
-            <span className="logo-text">천안맛.zip</span>
-          </div>
+          <img src={logo} alt="천안맛ZIP" className="logo-img" />
         </div>
 
         {/* 네비 */}
@@ -75,7 +39,6 @@ const Header = ({
                 {user?.nickname}님
               </span>
 
-              {/* 관리자 버튼 */}
               {user?.role === "ADMIN" && (
                 <button
                   className="btn-admin"
