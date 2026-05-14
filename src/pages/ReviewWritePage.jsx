@@ -1,39 +1,37 @@
-import { useState, useRef } from "react";
+import { useState } from "react"; // ✅ useRef 제거
 import { IoArrowBack } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
-import { LuUpload, LuX, LuSparkles } from "react-icons/lu";
+import { LuSparkles } from "react-icons/lu"; // ✅ LuUpload, LuX 제거
 import Button from "../components/common/Button";
 import "./ReviewWritePage.css";
+import PhotoUploader from "../components/restaurant/PhotoUploader";
 
 const TAGS = [
-  "친절함", "분위기좋음", "주차가능", "데이트추천", "가성비", "재방문", "주차편함", "혼밥가능", "웨이팅있음", "재방문의사",
+  "친절함",
+  "분위기좋음",
+  "주차가능",
+  "데이트추천",
+  "가성비",
+  "재방문",
+  "주차편함",
+  "혼밥가능",
+  "웨이팅있음",
+  "재방문의사",
 ];
 
 const ReviewWritePage = ({ restaurant, user, onClose }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
-  const [images, setImages] = useState([]);
   const [text, setText] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState(restaurant?.name || "");
-  const fileInputRef = useRef(null);
+  const [imageUrls, setImageUrls] = useState([]); //
 
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const previews = files.map((file) => ({
-      url: URL.createObjectURL(file),
-      name: file.name,
-    }));
-    setImages((prev) => [...prev, ...previews].slice(0, 10));
-  };
-
-  const removeImage = (idx) => {
-    setImages((prev) => prev.filter((_, i) => i !== idx));
-  };
+  // ✅ handleImageUpload, removeImage 제거
 
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
 
@@ -45,12 +43,17 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
   };
 
   const displayRating = hoverRating || rating;
-
-  const ratingLabels = ["", "별로예요", "그저 그래요", "괜찮아요", "좋아요", "최고예요!"];
+  const ratingLabels = [
+    "",
+    "별로예요",
+    "그저 그래요",
+    "괜찮아요",
+    "좋아요",
+    "최고예요!",
+  ];
 
   return (
     <div className="review-write-page">
-      {/* 상단 네비 */}
       <div className="rwp-nav">
         <button className="rwp-back-btn" onClick={onClose}>
           <IoArrowBack size={18} />
@@ -80,7 +83,9 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
             {[1, 2, 3, 4, 5].map((star) => (
               <span
                 key={star}
-                className={"rwp-star" + (star <= displayRating ? " active" : "")}
+                className={
+                  "rwp-star" + (star <= displayRating ? " active" : "")
+                }
                 onClick={() => setRating(star)}
                 onMouseEnter={() => setHoverRating(star)}
                 onMouseLeave={() => setHoverRating(0)}
@@ -97,45 +102,11 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
         {/* 사진 업로드 */}
         <section className="rwp-card">
           <p className="rwp-label">사진을 올려주세요</p>
-          <div
-            className="rwp-upload-area"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {images.length === 0 ? (
-              <>
-                <LuUpload size={32} className="rwp-upload-icon" />
-                <p className="rwp-upload-text">클릭하거나 드래그하여 이미지 업로드</p>
-                <p className="rwp-upload-hint">PNG, JPG 파일 (최대 10장)</p>
-              </>
-            ) : (
-              <div className="rwp-image-grid">
-                {images.map((img, i) => (
-                  <div key={i} className="rwp-image-item">
-                    <img src={img.url} alt={img.name} />
-                    <button
-                      className="rwp-image-remove"
-                      onClick={(e) => { e.stopPropagation(); removeImage(i); }}
-                    >
-                      <LuX size={12} />
-                    </button>
-                  </div>
-                ))}
-                {images.length < 10 && (
-                  <div className="rwp-image-add">
-                    <LuUpload size={20} />
-                    <span>추가</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            multiple
-            style={{ display: "none" }}
-            onChange={handleImageUpload}
+          <PhotoUploader
+            maxCount={3}
+            onUploadComplete={(urls) => {
+              setImageUrls((prev) => [...prev, ...urls]);
+            }}
           />
         </section>
 
@@ -145,7 +116,7 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
           <div className="rwp-textarea-wrap">
             <textarea
               className="rwp-textarea"
-              placeholder="이 맛집에 대한 솔직한 후기를 남겨주세요. 음식의 맛, 서비스, 분위기 등을 자세하게 작성해주세요."
+              placeholder="이 맛집에 대한 솔직한 후기를 남겨주세요."
               value={text}
               onChange={(e) => setText(e.target.value.slice(0, 500))}
               rows={5}
@@ -162,12 +133,16 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
         {/* 태그 */}
         <section className="rwp-card">
           <p className="rwp-label">분위기 태그를 선택해주세요</p>
-          <p className="rwp-sublabel">이 장소의 특징 중 맞는 것을 나타내는 태그를 선택하세요</p>
+          <p className="rwp-sublabel">
+            이 장소의 특징 중 맞는 것을 나타내는 태그를 선택하세요
+          </p>
           <div className="rwp-tags">
             {TAGS.map((tag) => (
               <button
                 key={tag}
-                className={"rwp-tag" + (selectedTags.includes(tag) ? " selected" : "")}
+                className={
+                  "rwp-tag" + (selectedTags.includes(tag) ? " selected" : "")
+                }
                 onClick={() => toggleTag(tag)}
               >
                 {tag}
@@ -184,17 +159,27 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
               {user?.nickname?.[0] || "나"}
             </div>
             <div className="rwp-preview-content">
-              <p className="rwp-preview-name">{user?.nickname || "나의 리뷰"}</p>
+              <p className="rwp-preview-name">
+                {user?.nickname || "나의 리뷰"}
+              </p>
               <div className="rwp-preview-stars">
-                {[1,2,3,4,5].map((s) => (
-                  <FaStar key={s} style={{ color: s <= rating ? "#ffb830" : "#ddd", fontSize: 14 }} />
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <FaStar
+                    key={s}
+                    style={{
+                      color: s <= rating ? "#ffb830" : "#ddd",
+                      fontSize: 14,
+                    }}
+                  />
                 ))}
               </div>
               {text && <p className="rwp-preview-text">{text}</p>}
               {selectedTags.length > 0 && (
                 <div className="rwp-preview-tags">
                   {selectedTags.map((t) => (
-                    <span key={t} className="rwp-preview-tag">#{t}</span>
+                    <span key={t} className="rwp-preview-tag">
+                      #{t}
+                    </span>
                   ))}
                 </div>
               )}
