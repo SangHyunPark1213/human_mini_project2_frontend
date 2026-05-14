@@ -1,4 +1,5 @@
 import "./Header.css";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({
   onLoginClick,
@@ -7,6 +8,8 @@ const Header = ({
   isLoggedIn,
   user,
 }) => {
+  const navigate = useNavigate();
+
   return (
     <header className="header">
       <div className="header-inner">
@@ -16,6 +19,9 @@ const Header = ({
           role="button"
           tabIndex={0}
           aria-label="홈으로 이동"
+          onClick={() => navigate("/")}
+          onKeyDown={(e) => e.key === "Enter" && navigate("/")}
+          style={{ cursor: "pointer" }}
         >
           <span className="logo-icons">
             <svg
