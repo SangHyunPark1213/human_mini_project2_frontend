@@ -4,6 +4,7 @@ import { FaStar } from "react-icons/fa";
 import { LuUpload, LuX, LuSparkles } from "react-icons/lu";
 import Button from "../components/common/Button";
 import "./ReviewWritePage.css";
+import { createReview } from "../api/reviewAPI";
 
 const TAGS = [
   "친절함", "분위기좋음", "주차가능", "데이트추천", "가성비", "재방문", "주차편함", "혼밥가능", "웨이팅있음", "재방문의사",
@@ -37,11 +38,28 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!rating) return alert("별점을 선택해주세요.");
     if (text.trim().length < 10) return alert("리뷰를 10자 이상 작성해주세요.");
-    alert("리뷰가 등록되었습니다!");
-    onClose();
+    if (!restaurant?.id) return alert("식당 정보가 없습니다.");
+    if (!user?.id) return alert("로그인이 필요합니다.");
+
+    try {
+      await createReview({
+        restaurantId: restaurant.id,
+        memberId: user.id,
+        rating,
+        content: text,
+        revisit: selectedTags.includes("재방문") ? "Y" : "N",
+        receiptUrl: null,
+        imageUrls: [],
+        situations: selectedTags,
+      });
+      alert("리뷰가 등록되었습니다!");
+      onClose();
+    } catch (err) {
+      alert(err.message || "리뷰 등록에 실패했습니다.");
+    }
   };
 
   const displayRating = hoverRating || rating;
