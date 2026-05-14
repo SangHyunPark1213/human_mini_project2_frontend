@@ -836,3 +836,31 @@
     font-size: 20px;
   }
 }
+
+/* 리뷰 정렬 셀렉트 */
+.review-sort-select {
+  padding: 8px 14px;
+  border: 1.5px solid #e0d8d0;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5b5148;
+  background: #faf7f4;
+  cursor: pointer;
+  outline: none;
+}
+
+.review-sort-select:focus {
+  border-color: #ff6b35;
+}
+
+/* 도움돼요 활성 상태 */
+.review-action-btn.helpful-active {
+  background: #fff3ee;
+  border-color: #ff6b35;
+  color: #ff6b35;
+}
+
+.map-header {
+  margin-bottom: 0;
+}

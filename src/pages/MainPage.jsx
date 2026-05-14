@@ -171,7 +171,7 @@ function MainPages({ onRestaurantClick }) {
         </div>
 
         {/* ── 최근 등록된 맛집 섹션 ── */}
-        <div className="recent-restaurant-list">
+        <div className="popular_menu_list">
           <div className="popular_menu_list_title">
             <p><LuClock /> 최근 등록된 맛집 🆕</p>
           </div>
@@ -183,34 +183,14 @@ function MainPages({ onRestaurantClick }) {
           ) : recentRestaurants.length === 0 ? (
             <div className="empty-state">등록된 맛집이 없습니다.</div>
           ) : (
-            <div className="recent-restaurant-board">
-              {recentRestaurants.slice(0, 8).map((restaurant, index) => {
-                const norm = normalizeRestaurant(restaurant);
-                return (
-                  <div
-                    className="recent-board-item"
-                    key={restaurant.id}
-                    onClick={() => onRestaurantClick && onRestaurantClick(norm)}
-                  >
-                    <span className="recent-board-num">{index + 1}</span>
-                    <div className="recent-board-thumb">
-                      <img
-                        src={norm.thumbnail || "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200"}
-                        alt={norm.name}
-                      />
-                    </div>
-                    <div className="recent-board-info">
-                      <span className="recent-board-name">{norm.name}</span>
-                      <span className="recent-board-category">{norm.category}</span>
-                      <span className="recent-board-location">{norm.location}</span>
-                    </div>
-                    <div className="recent-board-rating">
-                      ⭐ {(norm.average_rating || 0).toFixed(1)}
-                      <span className="recent-board-review-count">({norm.review_count || 0}개)</span>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="restaurant-grid">
+              {recentRestaurants.slice(0, 6).map((restaurant) => (
+                <RestaurantCard
+                  key={restaurant.id}
+                  restaurant={normalizeRestaurant(restaurant)}
+                  onClick={onRestaurantClick}
+                />
+              ))}
             </div>
           )}
         </div>
