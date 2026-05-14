@@ -1,22 +1,25 @@
 import { useState } from "react";
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
 import Header from "./components/layout/Header";
 import AuthModal from "./components/common/AuthModal";
 import MainPage from "./pages/MainPage";
-import RestaurantDetailPage from "./components/restaurant/RestaurantDetailPage";
+import RestaurantDetailPage from "./pages/RestaurantDetailPage";
 import ReviewWritePage from "./pages/ReviewWritePage";
-import SearchPage from "./pages/SearchPage"; // ✅ 검색 브랜치꺼 추가
+import SearchPage from "./pages/SearchPage";
 
-function App() {
+// BrowserRouter 내부에서 동작하는 실제 앱 컴포넌트
+function AppInner() {
   const [modal, setModal] = useState(null);
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null); // ✅ HEAD꺼 유지
-  const [writingReview, setWritingReview] = useState(false); // ✅ HEAD꺼 유지
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [writingReview, setWritingReview] = useState(false);
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("loginUser");
     return saved ? JSON.parse(saved) : null;
   });
+
+  const navigate = useNavigate();
 
   const handleLoginSuccess = (userData) => {
     setUser(userData);
@@ -30,7 +33,12 @@ function App() {
     setModal(null);
   };
 
-  // 리뷰 작성 페이지 (조건부 렌더링 유지)
+  const handleRestaurantClick = (restaurant) => {
+    setSelectedRestaurant(restaurant);
+    window.scrollTo(0, 0);
+  };
+
+  // 리뷰 작성 페이지
   if (writingReview) {
     window.scrollTo(0, 0);
     return (
@@ -42,13 +50,14 @@ function App() {
     );
   }
 
-  // 식당 상세 페이지 (조건부 렌더링 유지)
+  // 식당 상세 페이지
   if (selectedRestaurant) {
     window.scrollTo(0, 0);
     return (
       <>
         <RestaurantDetailPage
           restaurant={selectedRestaurant}
+          user={user}
           onClose={() => setSelectedRestaurant(null)}
           onWriteReview={() => {
             if (!user) {
@@ -74,7 +83,7 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
+    <>
       <Header
         isLoggedIn={!!user}
         user={user}
@@ -83,13 +92,15 @@ function App() {
         onLogoutClick={handleLogout}
       />
 
-      {/* ✅ 검색 브랜치의 Routes 구조 채택 + MainPage에 클릭 핸들러도 유지 */}
       <Routes>
         <Route
           path="/"
-          element={<MainPage onRestaurantClick={setSelectedRestaurant} />}
+          element={<MainPage onRestaurantClick={handleRestaurantClick} />}
         />
-        <Route path="/search" element={<SearchPage />} />
+        <Route
+          path="/search"
+          element={<SearchPage onRestaurantClick={handleRestaurantClick} />}
+        />
       </Routes>
 
       {modal && (
@@ -100,6 +111,14 @@ function App() {
           onSwitchMode={setModal}
         />
       )}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppInner />
     </BrowserRouter>
   );
 }

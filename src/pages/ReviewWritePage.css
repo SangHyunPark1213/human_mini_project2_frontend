@@ -388,3 +388,50 @@
   .rwp-image-item,
   .rwp-image-add { width: 80px; height: 80px; }
 }
+
+/* AI 추천문구 패널 */
+.rwp-ai-panel {
+  margin-top: 14px;
+  background: #fff8f5;
+  border: 1.5px solid #ffd5c0;
+  border-radius: 16px;
+  padding: 16px;
+  animation: fadeIn 0.18s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.rwp-ai-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #c04010;
+  margin-bottom: 12px;
+}
+
+.rwp-ai-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rwp-ai-item {
+  background: white;
+  border: 1px solid #f0d8cc;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #53483f;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.18s;
+}
+
+.rwp-ai-item:hover {
+  background: #fff3ee;
+  border-color: #ff6b35;
+  color: #2d2420;
+}

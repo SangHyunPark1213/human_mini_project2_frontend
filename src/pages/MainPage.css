@@ -236,3 +236,257 @@
   color: #c4c4c4;
   cursor: default;
 }
+/* ── 로딩 / 에러 / 빈 상태 ── */
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+  font-size: 15px;
+}
+.error-state { color: #e74c3c; }
+
+/* ── 최근 등록된 맛집 섹션 ── */
+.recent-restaurant-list {
+  margin: 32px 0 48px;
+}
+
+.recent-restaurant-board {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.recent-board-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.recent-board-item:last-child {
+  border-bottom: none;
+}
+
+.recent-board-item:hover {
+  background: #fafafa;
+}
+
+.recent-board-num {
+  min-width: 24px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #bbb;
+  text-align: center;
+}
+
+.recent-board-item:nth-child(1) .recent-board-num,
+.recent-board-item:nth-child(2) .recent-board-num,
+.recent-board-item:nth-child(3) .recent-board-num {
+  color: #ff6b35;
+}
+
+.recent-board-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.recent-board-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recent-board-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.recent-board-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-board-category {
+  font-size: 12px;
+  color: #ff6b35;
+  font-weight: 500;
+}
+
+.recent-board-location {
+  font-size: 12px;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recent-board-rating {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  white-space: nowrap;
+  gap: 2px;
+}
+
+.recent-board-review-count {
+  font-size: 11px;
+  color: #aaa;
+  font-weight: 400;
+}
+
+/* ── 최근 등록된 맛집 가로 슬라이더 ── */
+.recent-slider-section {
+  margin-top: 90px;
+  margin-bottom: 60px;
+}
+
+.recent-slider-wrap {
+  position: relative;
+  padding: 0 45px;
+}
+
+.recent-slider-track {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 8px;
+}
+
+.recent-slider-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* 슬라이드 카드 */
+.recent-slide-card {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+  background: white;
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.recent-slide-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+}
+
+.recent-slide-img {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  background: #f3eee8;
+  overflow: hidden;
+}
+
+.recent-slide-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.recent-slide-card:hover .recent-slide-img img {
+  transform: scale(1.05);
+}
+
+.recent-slide-score {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(0,0,0,0.62);
+  color: #ffe066;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 8px;
+  letter-spacing: 0.3px;
+}
+
+.recent-slide-info {
+  padding: 12px 14px 14px;
+}
+
+.recent-slide-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.recent-slide-category {
+  font-size: 12px;
+  color: #ff6b35;
+  font-weight: 600;
+}
+
+/* 화살표 버튼 */
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-60%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.16);
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s, color 0.18s, opacity 0.18s;
+  line-height: 1;
+}
+
+.slider-arrow:hover {
+  background: #ff6b35;
+  color: white;
+}
+
+.slider-arrow.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.slider-arrow-left  { left: 4px; }
+.slider-arrow-right { right: 4px; }
