@@ -10,6 +10,14 @@ const TAGS = [
   "친절함", "분위기좋음", "주차가능", "데이트추천", "가성비", "재방문", "주차편함", "혼밥가능", "웨이팅있음", "재방문의사",
 ];
 
+const AI_SUGGESTIONS = [
+  "음식이 정말 맛있고 신선했어요! 직원분들도 매우 친절하셨고, 분위기도 아늑해서 오랜만에 기분 좋은 식사를 했습니다. 다음에도 꼭 다시 방문하고 싶어요.",
+  "가성비가 훌륭한 맛집입니다. 양도 넉넉하고 맛도 뛰어나서 친구들과 함께 왔는데 모두 만족했어요. 주차도 편리해서 이용하기 좋았습니다.",
+  "분위기가 너무 좋아서 데이트 장소로 완벽했어요. 음식은 정성스럽게 준비되어 있고 플레이팅도 예뻐서 사진도 많이 찍었습니다. 강력 추천합니다!",
+  "혼밥하기도 부담 없는 곳이에요. 대표 메뉴를 시켜봤는데 기대 이상으로 맛있었고, 직원분들이 편안하게 대해주셔서 좋았습니다.",
+  "재료가 신선하고 요리 실력이 뛰어난 것 같아요. 처음 와봤는데 이미 단골이 될 것 같은 느낌입니다. 메뉴 구성도 다양하고 가격도 합리적입니다.",
+];
+
 const ReviewWritePage = ({ restaurant, user, onClose }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -17,6 +25,7 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
   const [text, setText] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState(restaurant?.name || "");
+  const [showAiSuggestions, setShowAiSuggestions] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleImageUpload = (e) => {
@@ -50,7 +59,7 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
         memberId: user.id,
         rating,
         content: text,
-        revisit: selectedTags.includes("재방문") ? "Y" : "N",
+        revisit: selectedTags.includes("재방문") || selectedTags.includes("재방문의사") ? "Y" : "N",
         receiptUrl: null,
         imageUrls: [],
         situations: selectedTags,
@@ -63,7 +72,6 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
   };
 
   const displayRating = hoverRating || rating;
-
   const ratingLabels = ["", "별로예요", "그저 그래요", "괜찮아요", "좋아요", "최고예요!"];
 
   return (
@@ -170,11 +178,35 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
             />
             <div className="rwp-textarea-footer">
               <span className="rwp-char-count">{text.length} / 500자</span>
-              <button className="rwp-ai-btn">
+              <button
+                className="rwp-ai-btn"
+                onClick={() => setShowAiSuggestions((prev) => !prev)}
+              >
                 <LuSparkles size={13} /> AI 추천문구 보기
               </button>
             </div>
           </div>
+
+          {/* AI 추천문구 패널 */}
+          {showAiSuggestions && (
+            <div className="rwp-ai-panel">
+              <p className="rwp-ai-panel-title">✨ AI 추천 문구 — 클릭하면 입력돼요</p>
+              <div className="rwp-ai-list">
+                {AI_SUGGESTIONS.map((s, i) => (
+                  <button
+                    key={i}
+                    className="rwp-ai-item"
+                    onClick={() => {
+                      setText(s.slice(0, 500));
+                      setShowAiSuggestions(false);
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* 태그 */}

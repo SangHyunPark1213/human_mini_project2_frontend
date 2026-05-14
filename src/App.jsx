@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import Header from "./components/layout/Header";
 import AuthModal from "./components/common/AuthModal";
 import MainPage from "./pages/MainPage";
-import RestaurantDetailPage from "./components/restaurant/RestaurantDetailPage";
+import RestaurantDetailPage from "./pages/RestaurantDetailPage";
 import ReviewWritePage from "./pages/ReviewWritePage";
 import SearchPage from "./pages/SearchPage";
 
@@ -57,6 +57,7 @@ function AppInner() {
       <>
         <RestaurantDetailPage
           restaurant={selectedRestaurant}
+          user={user}
           onClose={() => setSelectedRestaurant(null)}
           onWriteReview={() => {
             if (!user) {

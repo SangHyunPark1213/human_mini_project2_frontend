@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./MainPage.css";
 import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import { FiMapPin } from "react-icons/fi";
@@ -7,6 +7,97 @@ import { LuTrendingUp, LuClock } from "react-icons/lu";
 
 import RestaurantCard from "../components/restaurant/RestaurantCard";
 import { getRestaurants } from "../api/restaurantAPI";
+
+const FALLBACK_IMG = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600";
+
+const RecentSlider = ({ restaurants, loading, error, onRestaurantClick, normalizeRestaurant }) => {
+  const trackRef = useRef(null);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+
+  const CARD_W = 220; // 카드 너비 + gap
+  const SCROLL_AMOUNT = CARD_W * 3;
+
+  const updateButtons = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    setCanPrev(el.scrollLeft > 4);
+    setCanNext(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+  };
+
+  const scroll = (dir) => {
+    trackRef.current?.scrollBy({ left: dir * SCROLL_AMOUNT, behavior: "smooth" });
+    setTimeout(updateButtons, 350);
+  };
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", updateButtons, { passive: true });
+    updateButtons();
+    return () => el.removeEventListener("scroll", updateButtons);
+  }, [restaurants]);
+
+  return (
+    <div className="recent-slider-section">
+      <div className="popular_menu_list_title" style={{ padding: "0 45px", marginBottom: 24 }}>
+        <p><LuClock /> 최근 등록된 맛집</p>
+      </div>
+
+      {loading ? (
+        <div className="loading-state">🍽️ 맛집 정보를 불러오는 중...</div>
+      ) : error ? (
+        <div className="error-state">{error}</div>
+      ) : restaurants.length === 0 ? (
+        <div className="empty-state">등록된 맛집이 없습니다.</div>
+      ) : (
+        <div className="recent-slider-wrap">
+          <button
+            className={"slider-arrow slider-arrow-left" + (!canPrev ? " hidden" : "")}
+            onClick={() => scroll(-1)}
+            aria-label="이전"
+          >‹</button>
+
+          <div className="recent-slider-track" ref={trackRef}>
+            {restaurants.map((r) => {
+              const nr = normalizeRestaurant(r);
+              return (
+                <button
+                  key={r.id}
+                  className="recent-slide-card"
+                  onClick={() => onRestaurantClick(r)}
+                >
+                  <div className="recent-slide-img">
+                    <img
+                      src={nr.thumbnail || nr.image || FALLBACK_IMG}
+                      alt={nr.name}
+                      onError={(e) => { e.currentTarget.src = FALLBACK_IMG; }}
+                    />
+                    {nr.average_rating > 0 && (
+                      <span className="recent-slide-score">
+                        ★ {Number(nr.average_rating).toFixed(1)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="recent-slide-info">
+                    <p className="recent-slide-name">{nr.name}</p>
+                    <p className="recent-slide-category">{nr.category}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            className={"slider-arrow slider-arrow-right" + (!canNext ? " hidden" : "")}
+            onClick={() => scroll(1)}
+            aria-label="다음"
+          >›</button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 function MainPages({ onRestaurantClick }) {
   const [sortType, setSortType] = useState("review");
@@ -250,32 +341,14 @@ function MainPages({ onRestaurantClick }) {
           )}
         </div>
 
-        {/* ── 최근 등록된 맛집 섹션 ── */}
-        <div className="popular_menu_list">
-          <div className="popular_menu_list_title">
-            <p>
-              <LuClock /> 최근 등록된 맛집
-            </p>
-          </div>
-
-          {loading ? (
-            <div className="loading-state">🍽️ 맛집 정보를 불러오는 중...</div>
-          ) : error ? (
-            <div className="error-state">{error}</div>
-          ) : recentRestaurants.length === 0 ? (
-            <div className="empty-state">등록된 맛집이 없습니다.</div>
-          ) : (
-            <div className="restaurant-grid">
-              {recentRestaurants.slice(0, 6).map((restaurant) => (
-                <RestaurantCard
-                  key={restaurant.id}
-                  restaurant={normalizeRestaurant(restaurant)}
-                  onClick={onRestaurantClick}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        {/* ── 최근 등록된 맛집 슬라이더 ── */}
+        <RecentSlider
+          restaurants={recentRestaurants}
+          loading={loading}
+          error={error}
+          onRestaurantClick={onRestaurantClick}
+          normalizeRestaurant={normalizeRestaurant}
+        />
       </div>
     </main>
   );

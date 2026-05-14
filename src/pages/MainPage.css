@@ -355,3 +355,138 @@
   color: #aaa;
   font-weight: 400;
 }
+
+/* ── 최근 등록된 맛집 가로 슬라이더 ── */
+.recent-slider-section {
+  margin-top: 90px;
+  margin-bottom: 60px;
+}
+
+.recent-slider-wrap {
+  position: relative;
+  padding: 0 45px;
+}
+
+.recent-slider-track {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 8px;
+}
+
+.recent-slider-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* 슬라이드 카드 */
+.recent-slide-card {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+  background: white;
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.recent-slide-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+}
+
+.recent-slide-img {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  background: #f3eee8;
+  overflow: hidden;
+}
+
+.recent-slide-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.recent-slide-card:hover .recent-slide-img img {
+  transform: scale(1.05);
+}
+
+.recent-slide-score {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(0,0,0,0.62);
+  color: #ffe066;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 8px;
+  letter-spacing: 0.3px;
+}
+
+.recent-slide-info {
+  padding: 12px 14px 14px;
+}
+
+.recent-slide-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.recent-slide-category {
+  font-size: 12px;
+  color: #ff6b35;
+  font-weight: 600;
+}
+
+/* 화살표 버튼 */
+.slider-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-60%);
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.16);
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.18s, color 0.18s, opacity 0.18s;
+  line-height: 1;
+}
+
+.slider-arrow:hover {
+  background: #ff6b35;
+  color: white;
+}
+
+.slider-arrow.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.slider-arrow-left  { left: 4px; }
+.slider-arrow-right { right: 4px; }
