@@ -1,6 +1,8 @@
 import { useSearchParams } from "react-router-dom";
 import "./SearchPage.css";
 import { useState } from "react";
+import RestaurantCard from "../components/restaurant/RestaurantCard";
+import { FaAngleDown } from "react-icons/fa";
 
 function SearchPage() {
   const [searchParams] = useSearchParams();
@@ -9,12 +11,8 @@ function SearchPage() {
   const keyword = searchParams.get("keyword") || "";
   const category = searchParams.get("category") || "";
   const [selectedCategory, setSelectedCategory] = useState(category || "");
-
-  const [selectedSituation, setSelectedSituation] = useState("");
-
-  // const handleSituationClick = (situation) => {
-  //   setSelectedSituation(situation);
-  // };
+  const [selectedSituations, setSelectedSituations] = useState([]);
+  const [sortType, setSortType] = useState("latest");
 
   const dongList = {
     동남구: [
@@ -93,14 +91,146 @@ function SearchPage() {
     region === "천안전체" ? "" : region,
   );
 
-  const params = new URLSearchParams();
+  const toggleSituation = (situation) => {
+    setSelectedSituations((prev) =>
+      prev.includes(situation)
+        ? prev.filter((item) => item !== situation)
+        : [...prev, situation],
+    );
+  };
 
-  if (selectedCategory) params.set("category", selectedCategory);
-  if (selectedDong) params.set("region", selectedDong);
-  if (selectedSituation) params.set("situation", selectedSituation);
-  if (keyword) params.set("keyword", keyword);
+  const removeSituation = (situation) => {
+    setSelectedSituations((prev) => prev.filter((item) => item !== situation));
+  };
 
-  fetch(`/api/restaurants?${params.toString()}`);
+  const restaurants = [
+    {
+      id: 1,
+      thumbnail:
+        "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600",
+      name: "천안곱창맛집",
+      category: "한식",
+      average_rating: 4.3,
+      location: "충남 천안시 동남구",
+      description:
+        "천안에서 유명한 곱창 맛집입니다. 신선한 재료로 매일 준비합니다.",
+      popular_menu: "곱창볶음, 막창구이, 볶음밥",
+      review_count: 128,
+      situations: ["혼밥", "가성비"],
+    },
+    {
+      id: 2,
+      thumbnail:
+        "https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=600",
+      name: "스시오마카세",
+      category: "일식",
+      average_rating: 4.9,
+      location: "충남 천안시 서북구",
+      description:
+        "셰프가 직접 엄선한 신선한 해산물로 만드는 정통 오마카세 스시.",
+      popular_menu: "오마카세 코스, 연어초밥, 참치대뱃살",
+      review_count: 87,
+      situations: ["특별한 날", "데이트"],
+    },
+    {
+      id: 3,
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      name: "파스타공방",
+      category: "양식",
+      average_rating: 4.6,
+      location: "충남 천안시 동남구",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      popular_menu: "까르보나라, 봉골레, 토마토파스타",
+      review_count: 54,
+      situations: ["야식/늦은 밤"],
+    },
+    {
+      id: 4,
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      name: "파스타공방",
+      category: "양식",
+      average_rating: 4.3,
+      location: "충남 천안시 동남구",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      popular_menu: "까르보나라, 봉골레, 토마토파스타",
+      review_count: 54,
+      situations: ["가족 모임"],
+    },
+    {
+      id: 5,
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      name: "파스타공방",
+      category: "양식",
+      average_rating: 4.3,
+      location: "충남 천안시 동남구",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      popular_menu: "까르보나라, 봉골레, 토마토파스타",
+      review_count: 54,
+      situations: ["특별한 날", "친구/회식"],
+    },
+    {
+      id: 6,
+      thumbnail:
+        "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600",
+      name: "파스타공방",
+      category: "양식",
+      average_rating: 4.3,
+      location: "충남 천안시 동남구",
+      description:
+        "직접 뽑은 생면 파스타와 최고의 소스로 만드는 정통 이탈리안 요리.",
+      popular_menu: "까르보나라, 봉골레, 토마토파스타",
+      review_count: 54,
+      situations: ["데이트", "뷰 맛집"],
+    },
+  ];
+
+  const filteredRestaurants = restaurants.filter((restaurant) => {
+    const matchRegion =
+      !selectedDong && !selectedGu
+        ? true
+        : selectedDong
+          ? restaurant.location.includes(selectedDong)
+          : restaurant.location.includes(selectedGu);
+
+    const matchCategory =
+      !selectedCategory || restaurant.category === selectedCategory;
+
+    const matchKeyword =
+      !keyword ||
+      restaurant.name.includes(keyword) ||
+      restaurant.category.includes(keyword) ||
+      restaurant.popular_menu.includes(keyword);
+
+    const matchSituation =
+      selectedSituations.length === 0 ||
+      selectedSituations.every((situation) =>
+        restaurant.situations?.includes(situation),
+      );
+
+    return matchRegion && matchCategory && matchKeyword && matchSituation;
+  });
+
+  const sortedRestaurants = [...filteredRestaurants].sort((a, b) => {
+    if (sortType === "review") {
+      return b.review_count - a.review_count;
+    }
+
+    if (sortType === "rating") {
+      return b.average_rating - a.average_rating;
+    }
+
+    if (sortType === "latest") {
+      return a.id - b.id;
+    }
+
+    return 0;
+  });
 
   return (
     <main className="search-page">
@@ -125,33 +255,39 @@ function SearchPage() {
             천안 전체
           </button>
 
-          <select
-            className="filter-select"
-            value={selectedGu}
-            onChange={(e) => {
-              setSelectedGu(e.target.value);
-              setSelectedDong("");
-            }}
-          >
-            <option value="">구 선택</option>
-            <option value="동남구">동남구</option>
-            <option value="서북구">서북구</option>
-          </select>
+          <div className="select-wrap">
+            <select
+              className="filter-select"
+              value={selectedGu}
+              onChange={(e) => {
+                setSelectedGu(e.target.value);
+                setSelectedDong("");
+              }}
+            >
+              <option value="">구 선택</option>
+              <option value="동남구">동남구</option>
+              <option value="서북구">서북구</option>
+            </select>
+            <FaAngleDown />
+          </div>
 
-          <select
-            className="filter-select"
-            value={selectedDong}
-            onChange={(e) => setSelectedDong(e.target.value)}
-            disabled={!selectedGu}
-          >
-            <option value="">동네 선택</option>
-            {selectedGu &&
-              dongList[selectedGu].map((dong) => (
-                <option key={dong} value={dong}>
-                  {dong}
-                </option>
-              ))}
-          </select>
+          <div className="select-wrap">
+            <select
+              className="filter-select"
+              value={selectedDong}
+              onChange={(e) => setSelectedDong(e.target.value)}
+              disabled={!selectedGu}
+            >
+              <option value="">동네 선택</option>
+              {selectedGu &&
+                dongList[selectedGu].map((dong) => (
+                  <option key={dong} value={dong}>
+                    {dong}
+                  </option>
+                ))}
+            </select>
+            <FaAngleDown />
+          </div>
         </div>
 
         <div className="filter-group">
@@ -215,51 +351,132 @@ function SearchPage() {
         <div className="filter-group">
           <p className="filter-title">상황 / 테마</p>
           <button
-            className={selectedSituation === "혼밥" ? "filter-active" : ""}
-            onClick={() => setSelectedSituation("혼밥")}
+            className={
+              selectedSituations.includes("혼밥") ? "filter-active" : ""
+            }
+            onClick={() => toggleSituation("혼밥")}
           >
             🍱 혼밥
           </button>
           <button
-            className={selectedSituation === "데이트" ? "filter-active" : ""}
-            onClick={() => setSelectedSituation("데이트")}
+            className={
+              selectedSituations.includes("데이트") ? "filter-active" : ""
+            }
+            onClick={() => toggleSituation("데이트")}
           >
             💑 데이트
           </button>
           <button
-            className={selectedSituation === "데이트" ? "filter-active" : ""}
-            onClick={() => setSelectedSituation("데이트")}
+            className={
+              selectedSituations.includes("가족 모임") ? "filter-active" : ""
+            }
+            onClick={() => toggleSituation("가족 모임")}
           >
             👨‍👩‍👧 가족 모임
           </button>
-          <button>🍻 친구/회식</button>
-          <button>💰 가성비</button>
-          <button>🎉 특별한 날</button>
-          <button>🌙 야식/늦은 밤</button>
-          <button>🤫 조용한 곳</button>
-          <button>🌅 뷰 맛집</button>
-          <button>👥 단체/모임</button>
+          <button
+            className={
+              selectedSituations.includes("친구/회식") ? "filter-active" : ""
+            }
+            onClick={() => toggleSituation("친구/회식")}
+          >
+            🍻 친구/회식
+          </button>
+          <button
+            className={
+              selectedSituations.includes("가성비") ? "filter-active" : ""
+            }
+            onClick={() => toggleSituation("가성비")}
+          >
+            💰 가성비
+          </button>
+          <button
+            className={
+              selectedSituations.includes("특별한 날") ? "filter-active" : ""
+            }
+            onClick={() => toggleSituation("특별한 날")}
+          >
+            🎉 특별한 날
+          </button>
+          <button
+            className={
+              selectedSituations.includes("야식/늦은 밤") ? "filter-active" : ""
+            }
+            onClick={() => toggleSituation("야식/늦은 밤")}
+          >
+            🌙 야식/늦은 밤
+          </button>
+          <button
+            className={
+              selectedSituations.includes("조용한 곳") ? "filter-active" : ""
+            }
+            onClick={() => toggleSituation("조용한 곳")}
+          >
+            🤫 조용한 곳
+          </button>
+          <button
+            className={
+              selectedSituations.includes("뷰 맛집") ? "filter-active" : ""
+            }
+            onClick={() => toggleSituation("뷰 맛집")}
+          >
+            🌅 뷰 맛집
+          </button>
+          <button
+            className={
+              selectedSituations.includes("단체/모임") ? "filter-active" : ""
+            }
+            onClick={() => toggleSituation("단체/모임")}
+          >
+            👥 단체/모임
+          </button>
         </div>
       </section>
 
       <section className="result-section">
         <div className="result-header">
           <div>
-            <strong>총 0개의 맛집</strong>
+            <strong>총 {filteredRestaurants.length}개의 맛집</strong>
 
             <div className="selected-tags">
               <span>{selectedDong || selectedGu || "천안 전체"}</span>
 
               {selectedCategory && <span>{selectedCategory}</span>}
               {keyword && <span>{keyword}</span>}
+              {selectedSituations.map((situation) => (
+                <span key={situation} className="tag-removable">
+                  {situation}
+                  <button
+                    type="button"
+                    onClick={() => removeSituation(situation)}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
             </div>
           </div>
 
-          <select>
-            <option>최신 순</option>
-            <option>리뷰 많은 순</option>
-            <option>별점 높은 순</option>
-          </select>
+          <div className="select-wrap">
+            <select
+              value={sortType}
+              onChange={(e) => setSortType(e.target.value)}
+            >
+              <option value="latest">기본 순</option>
+              <option value="review">리뷰 많은 순</option>
+              <option value="rating">별점 높은 순</option>
+            </select>
+            <FaAngleDown />
+          </div>
+        </div>
+        <div className="search-result-grid">
+          {sortedRestaurants.map((restaurant) => (
+            <RestaurantCard
+              key={restaurant.id}
+              restaurant={restaurant}
+              onClick={() => {}}
+            />
+          ))}
         </div>
       </section>
     </main>
