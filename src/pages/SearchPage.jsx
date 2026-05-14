@@ -2,6 +2,7 @@ import { useSearchParams } from "react-router-dom";
 import "./SearchPage.css";
 import { useState } from "react";
 import RestaurantCard from "../components/restaurant/RestaurantCard";
+import { FaAngleDown } from "react-icons/fa";
 
 function SearchPage() {
   const [searchParams] = useSearchParams();
@@ -11,6 +12,7 @@ function SearchPage() {
   const category = searchParams.get("category") || "";
   const [selectedCategory, setSelectedCategory] = useState(category || "");
   const [selectedSituations, setSelectedSituations] = useState([]);
+  const [sortType, setSortType] = useState("latest");
 
   const dongList = {
   동남구: ["다가동", "광덕면", "구성동", "구룡동", "대흥동", "동면", "목천읍", "문화동", "문성동", "병천면", "봉명동", "북면", "사직동", "삼룡동", "성남면", "성황동", "수신면", "신방동", "신부동", "신안동", "쌍용동", "안서동", "영성동", "오룡동", "용곡동", "원성1동", "원성2동", "원성동", "유량동", "일봉동", "중앙동", "청당동", "청룡동", "청수동", "풍세면"],
@@ -148,11 +150,27 @@ function SearchPage() {
 
     const matchSituation =
       selectedSituations.length === 0 ||
-      selectedSituations.some((situation) =>
+      selectedSituations.every((situation) =>
         restaurant.situations?.includes(situation)
       );
 
     return matchRegion && matchCategory && matchKeyword && matchSituation;
+  });
+
+  const sortedRestaurants = [...filteredRestaurants].sort((a, b) => {
+    if (sortType === "review") {
+      return b.review_count - a.review_count;
+    }
+
+    if (sortType === "rating") {
+      return b.average_rating - a.average_rating;
+    }
+
+    if (sortType === "latest") {
+      return a.id - b.id;
+    }
+
+    return 0;
   });
 
   return (
@@ -180,33 +198,40 @@ function SearchPage() {
             천안 전체
           </button>
 
-          <select
-            className="filter-select"
-            value={selectedGu}
-            onChange={(e) => {
-              setSelectedGu(e.target.value);
-              setSelectedDong("");
-            }}
-          >
-            <option value="">구 선택</option>
-            <option value="동남구">동남구</option>
-            <option value="서북구">서북구</option>
-          </select>
-
-          <select
-            className="filter-select"
-            value={selectedDong}
-            onChange={(e) => setSelectedDong(e.target.value)}
-            disabled={!selectedGu}
-          >
-            <option value="">동네 선택</option>
-            {selectedGu &&
-              dongList[selectedGu].map((dong) => (
-                <option key={dong} value={dong}>
-                  {dong}
-                </option>
-              ))}
-          </select>
+          <div className="select-wrap">
+            <select
+              className="filter-select"
+              value={selectedGu}
+              onChange={(e) => {
+                setSelectedGu(e.target.value);
+                setSelectedDong("");
+              }}
+            >
+              <option value="">구 선택</option>
+              <option value="동남구">동남구</option>
+              <option value="서북구">서북구</option>
+            </select>
+            <FaAngleDown />
+          </div>
+          
+          <div className="select-wrap">
+            <select
+              className="filter-select"
+              value={selectedDong}
+              onChange={(e) => setSelectedDong(e.target.value)}
+              disabled={!selectedGu}
+            >
+              <option value="">동네 선택</option>
+              {selectedGu &&
+                dongList[selectedGu].map((dong) => (
+                  <option key={dong} value={dong}>
+                    {dong}
+                  </option>
+                ))}
+            </select>
+            <FaAngleDown />
+          </div>
+          
         </div>
 
         <div className="filter-group">
@@ -291,14 +316,21 @@ function SearchPage() {
             </div>
           </div>
 
-          <select>
-            <option>최신 순</option>
-            <option>리뷰 많은 순</option>
-            <option>별점 높은 순</option>
-          </select>
+          <div className="select-wrap">
+            <select
+              value={sortType}
+              onChange={(e) => setSortType(e.target.value)}
+            >
+              <option value="latest">기본 순</option>
+              <option value="review">리뷰 많은 순</option>
+              <option value="rating">별점 높은 순</option>
+            </select>
+            <FaAngleDown />
+          </div>
+          
         </div>
         <div className="search-result-grid">
-          {filteredRestaurants.map((restaurant) => (
+          {sortedRestaurants.map((restaurant) => (
             <RestaurantCard
               key={restaurant.id}
               restaurant={restaurant}

@@ -29,11 +29,13 @@
   font-weight: 900;
   margin-bottom: 10px;
   color: white;
+  display: flex;
 }
 
 .search-hero-content p {
   font-size: 15px;
   font-weight: 600;
+  display: flex;
 }
 
 .filter-section {
@@ -147,4 +149,24 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 21px;
+}
+
+select {
+  appearance: none;
+}
+
+.select-wrap {
+  position: relative;
+}
+
+.select-wrap svg {
+  position: absolute;
+  right: 15px;
+  width: 7.5px;
+  top: 9px;
+  pointer-events: none;
+}
+
+.filter-select {
+  padding-right: 35px;
 }
