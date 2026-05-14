@@ -47,12 +47,6 @@
   white-space: nowrap;
 }
 
-.logo-img {
-  height: 72px;
-  width: auto;
-  object-fit: contain;
-}
-
 /* 오른쪽 버튼 */
 .header-nav {
   margin-left: auto;
@@ -111,6 +105,10 @@
 
 /* 로그인 상태 */
 .user-greeting {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
   font-size: 14px;
   font-weight: 600;
   color: #444;
@@ -137,4 +135,30 @@
 .btn-logout:hover {
   background: #f5f5f5;
   color: #e84c1e;
+}
+
+/* 관리자 버튼 */
+.btn-admin {
+  background: #1f2937;
+  border: none;
+
+  color: white;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  padding: 11px 18px;
+
+  border-radius: 999px;
+
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+
+.btn-admin:hover {
+  background: #111827;
+  transform: translateY(-1px);
 }
