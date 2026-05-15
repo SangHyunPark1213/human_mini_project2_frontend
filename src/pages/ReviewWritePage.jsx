@@ -6,8 +6,9 @@ import Button from "../components/common/Button";
 import "./ReviewWritePage.css";
 import PhotoUploader from "../components/restaurant/PhotoUploader";
 import { createReview, getReviewsByRestaurant } from "../api/reviewAPI";
+// uploadImage 단건 함수도 추가 (영수증은 단건)
+import { uploadImages, uploadImage } from "../firebase/uploadImage";
 
-// 검색 페이지 상황/테마 태그와 동일한 값으로 통일
 const TAGS = [
   { label: "혼밥가능", value: "혼밥가능" },
   { label: "분위기좋음", value: "분위기좋음" },
@@ -34,12 +35,14 @@ const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
   const [text, setText] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState(restaurant?.name || "");
-  const [imageUrls, setImageUrls] = useState([]);
+  const [imageFiles, setImageFiles] = useState([]); //  파일 객체
+  const [uploading, setUploading] = useState(false); //  업로드 중
   const [showAiSuggestions, setShowAiSuggestions] = useState(false);
   const [alreadyReviewed, setAlreadyReviewed] = useState(false);
   const [checkingReview, setCheckingReview] = useState(true);
+  const [receiptFile, setReceiptFile] = useState(null);
+  const [receiptPreview, setReceiptPreview] = useState(null);
 
-  // 이미 리뷰 작성 여부 확인
   useEffect(() => {
     if (!restaurant?.id || !user?.nickname) {
       setCheckingReview(false);
@@ -47,9 +50,9 @@ const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
     }
     getReviewsByRestaurant(restaurant.id)
       .then((reviews) => {
-        const already = Array.isArray(reviews) && reviews.some(
-          (r) => r.nickname === user.nickname
-        );
+        const already =
+          Array.isArray(reviews) &&
+          reviews.some((r) => r.nickname === user.nickname);
         setAlreadyReviewed(already);
       })
       .catch(() => {})
@@ -62,6 +65,18 @@ const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
     );
   };
 
+  const handleReceiptChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setReceiptFile(file);
+    setReceiptPreview(URL.createObjectURL(file));
+  };
+
+  const handleReceiptRemove = () => {
+    setReceiptFile(null);
+    setReceiptPreview(null);
+  };
+
   const handleSubmit = async () => {
     if (alreadyReviewed) return alert("이미 이 가게에 리뷰를 작성하셨습니다.");
     if (!rating) return alert("별점을 선택해주세요.");
@@ -69,22 +84,39 @@ const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
     if (!restaurant?.id) return alert("식당 정보가 없습니다.");
     if (!user?.id) return alert("로그인이 필요합니다.");
 
+    setUploading(true);
+
     try {
+      // ① 리뷰 사진 업로드
+      let imageUrls = [];
+      if (imageFiles.length > 0) {
+        imageUrls = await uploadImages(imageFiles, "reviews");
+      }
+
+      // ② 영수증 업로드 (선택사항)
+      let receiptUrl = null;
+      if (receiptFile) {
+        receiptUrl = await uploadImage(receiptFile, "receipts"); // 🆕
+      }
+
+      // ③ 백엔드 전달
       await createReview({
         restaurantId: restaurant.id,
-        memberId: user.id,
         rating,
         content: text,
         revisit: selectedTags.includes("재방문의사") ? "Y" : "N",
-        receiptUrl: null,
-        imageUrls: [],
+        receiptUrl, // 🆕 null 또는 Firebase URL
+        imageUrls,
         situations: selectedTags,
       });
+
       alert("리뷰가 등록되었습니다!");
       if (onReviewSubmitted) onReviewSubmitted();
       else onClose();
     } catch (err) {
       alert(err.message || "리뷰 등록에 실패했습니다.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -109,7 +141,10 @@ const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
           <span className="rwp-nav-title">리뷰 작성</span>
           <div style={{ width: 80 }} />
         </div>
-        <div className="rwp-body" style={{ textAlign: "center", padding: "60px 0" }}>
+        <div
+          className="rwp-body"
+          style={{ textAlign: "center", padding: "60px 0" }}
+        >
           <p>확인 중...</p>
         </div>
       </div>
@@ -118,7 +153,10 @@ const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
 
   if (alreadyReviewed) {
     return (
-      <div className="review-write-page" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <div
+        className="review-write-page"
+        style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+      >
         <div className="rwp-nav">
           <button className="rwp-back-btn" onClick={onClose}>
             <IoArrowBack size={18} />
@@ -127,13 +165,33 @@ const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
           <span className="rwp-nav-title">리뷰 작성</span>
           <div style={{ width: 80 }} />
         </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "0 20px",
+          }}
+        >
           <div style={{ fontSize: 48, marginBottom: 16 }}>✍️</div>
-          <p style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>이미 리뷰를 작성하셨어요!</p>
-          <p style={{ color: "#a0917f", fontSize: 14, marginBottom: 24, textAlign: "center" }}>
+          <p style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>
+            이미 리뷰를 작성하셨어요!
+          </p>
+          <p
+            style={{
+              color: "#a0917f",
+              fontSize: 14,
+              marginBottom: 24,
+              textAlign: "center",
+            }}
+          >
             같은 가게에는 아이디당 1개의 리뷰만 작성할 수 있습니다.
           </p>
-          <Button variant="primary" size="md" onClick={onClose}>돌아가기</Button>
+          <Button variant="primary" size="md" onClick={onClose}>
+            돌아가기
+          </Button>
         </div>
       </div>
     );
@@ -191,9 +249,7 @@ const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
           <p className="rwp-label">사진을 올려주세요</p>
           <PhotoUploader
             maxCount={3}
-            onUploadComplete={(urls) => {
-              setImageUrls((prev) => [...prev, ...urls]);
-            }}
+            onFilesChange={(files) => setImageFiles(files)} // 🆕 파일 받기
           />
         </section>
 
@@ -219,7 +275,6 @@ const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
             </div>
           </div>
 
-          {/* AI 추천문구 패널 */}
           {showAiSuggestions && (
             <div className="rwp-ai-panel">
               <p className="rwp-ai-panel-title">
@@ -264,6 +319,82 @@ const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
           </div>
         </section>
 
+        {/* 영수증 인증 */}
+        <section className="rwp-card">
+          <p className="rwp-label">영수증 인증 (선택)</p>
+          <p className="rwp-sublabel">
+            영수증 사진을 등록하면 관리자 확인 후 방문 인증 배지가 부여됩니다.
+          </p>
+
+          {!receiptPreview ? (
+            <label
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 16px",
+                background: "#ff6b35",
+                color: "#fff",
+                borderRadius: 8,
+                cursor: "pointer",
+                fontSize: 14,
+                fontWeight: 700,
+                marginTop: 8,
+              }}
+            >
+              🧾 영수증 사진 추가
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleReceiptChange}
+              />
+            </label>
+          ) : (
+            <div
+              style={{
+                position: "relative",
+                display: "inline-block",
+                marginTop: 8,
+              }}
+            >
+              <img
+                src={receiptPreview}
+                alt="영수증 미리보기"
+                style={{
+                  width: 120,
+                  height: 120,
+                  objectFit: "cover",
+                  borderRadius: 8,
+                  border: "1px solid #eee",
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleReceiptRemove}
+                style={{
+                  position: "absolute",
+                  top: -6,
+                  right: -6,
+                  width: 20,
+                  height: 20,
+                  background: "#ff4444",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "50%",
+                  cursor: "pointer",
+                  fontSize: 11,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+        </section>
+
         {/* 미리보기 */}
         <section className="rwp-card rwp-preview-card">
           <p className="rwp-preview-title">👀 미리보기</p>
@@ -301,8 +432,13 @@ const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
         </section>
 
         {/* 제출 버튼 */}
-        <Button variant="primary" size="lg" onClick={handleSubmit}>
-          리뷰 등록하기
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={handleSubmit}
+          disabled={uploading}
+        >
+          {uploading ? "등록 중..." : "리뷰 등록하기"}
         </Button>
       </div>
     </div>

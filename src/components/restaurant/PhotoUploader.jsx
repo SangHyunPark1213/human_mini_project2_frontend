@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { uploadImages } from "../../firebase/uploadImage";
 import { LuUpload, LuX } from "react-icons/lu";
 
-const PhotoUploader = ({ onUploadComplete, maxCount = 3 }) => {
+const PhotoUploader = ({ onFilesChange, maxCount = 3 }) => {
   const [previews, setPreviews] = useState([]);
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleFileChange = async (e) => {
+  const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
 
     if (files.length + previews.length > maxCount) {
@@ -16,30 +14,28 @@ const PhotoUploader = ({ onUploadComplete, maxCount = 3 }) => {
     }
 
     setError("");
-    setUploading(true);
 
-    try {
-      const previewUrls = files.map((file) => ({
-        url: URL.createObjectURL(file),
-        file,
-      }));
-      setPreviews((prev) => [...prev, ...previewUrls]);
+    const newPreviews = files.map((file) => ({
+      url: URL.createObjectURL(file),
+      file,
+    }));
 
-      const uploadedUrls = await uploadImages(files, "reviews");
+    const updated = [...previews, ...newPreviews];
+    setPreviews(updated);
 
-      if (onUploadComplete) {
-        onUploadComplete(uploadedUrls);
-      }
-    } catch (err) {
-      console.error("업로드 실패:", err);
-      setError("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
-    } finally {
-      setUploading(false);
+    // 파일 객체를 부모에게 전달
+    if (onFilesChange) {
+      onFilesChange(updated.map((p) => p.file));
     }
   };
 
   const handleRemove = (index) => {
-    setPreviews((prev) => prev.filter((_, i) => i !== index));
+    const updated = previews.filter((_, i) => i !== index);
+    setPreviews(updated);
+
+    if (onFilesChange) {
+      onFilesChange(updated.map((p) => p.file));
+    }
   };
 
   return (
@@ -51,25 +47,22 @@ const PhotoUploader = ({ onUploadComplete, maxCount = 3 }) => {
             alignItems: "center",
             gap: 6,
             padding: "8px 16px",
-            background: uploading ? "#9ca3af" : "#ff6b35",
+            background: "#ff6b35",
             color: "#fff",
             borderRadius: 8,
-            cursor: uploading ? "not-allowed" : "pointer",
+            cursor: "pointer",
             fontSize: 14,
             fontWeight: 700,
           }}
         >
           <LuUpload size={14} />
-          {uploading
-            ? "업로드 중..."
-            : `사진 추가 (${previews.length}/${maxCount})`}
+          {`사진 추가 (${previews.length}/${maxCount})`}
           <input
             type="file"
             accept="image/*"
             multiple
             style={{ display: "none" }}
             onChange={handleFileChange}
-            disabled={uploading}
           />
         </label>
       )}
