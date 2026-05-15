@@ -447,6 +447,17 @@ const RestaurantDetailPage = ({
     if (s >= 1 && s <= 5) ratingDist[s]++;
   });
 
+  // situations 태그 빈도 집계
+  const keywordMap = {};
+  sortedReviews.forEach((r) => {
+    (r.situations || []).forEach((tag) => {
+      keywordMap[tag] = (keywordMap[tag] || 0) + 1;
+    });
+  });
+  const topKeywords = Object.entries(keywordMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8);
+
   const menus = (restaurant.popularMenu || "대표메뉴")
     .split(",")
     .map((m) => m.trim());
@@ -617,9 +628,7 @@ const RestaurantDetailPage = ({
             <div className="analysis-col">
               <p className="analysis-label">평균 별점</p>
               <div style={{ textAlign: "center", padding: "20px 0" }}>
-                <div
-                  style={{ fontSize: 48, fontWeight: 800, color: "#ff6b35" }}
-                >
+                <div style={{ fontSize: 48, fontWeight: 800, color: "#ff6b35" }}>
                   {Number(avgRating).toFixed(1)}
                 </div>
                 <StarRating rating={avgRating} size={20} />
@@ -627,6 +636,19 @@ const RestaurantDetailPage = ({
                   총 {totalReviews}개 리뷰
                 </div>
               </div>
+              {topKeywords.length > 0 && (
+                <div style={{ marginTop: 24 }}>
+                  <p className="analysis-label">자주 언급된 키워드</p>
+                  <div className="keyword-tag-list">
+                    {topKeywords.map(([tag, count]) => (
+                      <span key={tag} className="keyword-tag">
+                        {tag}
+                        <span className="keyword-tag-count">{count}</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>

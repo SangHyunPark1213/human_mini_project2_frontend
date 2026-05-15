@@ -1,8 +1,6 @@
 .detail-page {
   background: #f7f4f0;
   min-height: 100vh;
-  max-width: 980px;
-  margin: 0 auto;
   animation: slideUp 0.22s ease;
 }
 
@@ -135,7 +133,7 @@
 }
 
 /* ── ANALYSIS ── */
-.analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
 .analysis-label { margin-bottom: 12px; font-size: 12px; font-weight: 700; color: #a0917f; }
 .rating-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .rating-bar-track {
@@ -300,4 +298,20 @@
   .reviews-header { flex-direction: column; align-items: flex-start; gap: 12px; }
   .review-card { padding: 18px 18px 8px; }
   .write-review-btn { width: 100%; justify-content: center; }
+}
+
+/* ── 키워드 태그 ── */
+.keyword-tag-list {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+}
+.keyword-tag {
+  display: flex; align-items: center; gap: 5px;
+  background: #fff3ee; color: #d4511f;
+  border: 1.5px solid #ffd5c2; border-radius: 20px;
+  padding: 6px 14px; font-size: 13px; font-weight: 700;
+}
+.keyword-tag-count {
+  background: #ff6b35; color: white;
+  border-radius: 999px; padding: 1px 7px;
+  font-size: 11px; font-weight: 800;
 }
