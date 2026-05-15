@@ -412,8 +412,18 @@ const RestaurantDetailPage = ({
   const [reviews, setReviews] = useState([]);
   const [reviewLoading, setReviewLoading] = useState(true);
   const [sortType, setSortType] = useState("latest");
-  const [helpfulClicked, setHelpfulClicked] = useState({});
   const [reviewPage, setReviewPage] = useState(1);
+
+  // 도움돼요 상태를 localStorage에 유저별로 저장해서 페이지 이동 후에도 유지
+  const helpfulKey = `helpful_${user?.id ?? "guest"}_${restaurant?.id}`;
+  const [helpfulClicked, setHelpfulClicked] = useState(() => {
+    try {
+      const saved = localStorage.getItem(helpfulKey);
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
 
   if (!restaurant) return null;
 
@@ -485,7 +495,12 @@ const RestaurantDetailPage = ({
 
   const handleHelpful = async (reviewId) => {
     const wasClicked = helpfulClicked[reviewId];
-    setHelpfulClicked((prev) => ({ ...prev, [reviewId]: !wasClicked }));
+    const next = { ...helpfulClicked, [reviewId]: !wasClicked };
+    setHelpfulClicked(next);
+    // localStorage에 저장해서 페이지 이동 후에도 유지
+    try {
+      localStorage.setItem(helpfulKey, JSON.stringify(next));
+    } catch {}
     setReviews((prev) =>
       prev.map((r) =>
         r.id === reviewId
