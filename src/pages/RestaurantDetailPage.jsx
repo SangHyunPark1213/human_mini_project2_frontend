@@ -373,7 +373,20 @@ const ReviewCard = ({
         </div>
       )}
 
-
+      {/* 도움돼요 버튼 — 카드 내부 footer */}
+      {!editing && (
+        <div className="review-footer">
+          <button
+            className={
+              "review-action-btn" + (helpfulActive ? " helpful-active" : "")
+            }
+            onClick={onHelpful}
+          >
+            <LuThumbsUp size={13} />
+            도움돼요 {review.helpfulCount ?? 0}
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -385,6 +398,7 @@ const RestaurantDetailPage = ({
   onWriteReview,
   isAdmin = false,
   user,
+  refreshKey = 0,
 }) => {
   const [reviews, setReviews] = useState([]);
   const [reviewLoading, setReviewLoading] = useState(true);
@@ -410,7 +424,7 @@ const RestaurantDetailPage = ({
       .then((data) => setReviews(Array.isArray(data) ? data : []))
       .catch(() => setReviews([]))
       .finally(() => setReviewLoading(false));
-  }, [restaurant.id]);
+  }, [restaurant.id, refreshKey]);
 
   const sortedReviews = [...reviews].sort((a, b) => {
     if (sortType === "helpful")
@@ -667,31 +681,16 @@ const RestaurantDetailPage = ({
             <>
               <div className="reviews-list">
                 {pagedReviews.map((review) => (
-                  <div key={review.id}>
-                    <ReviewCard
-                      review={review}
-                      restaurantId={restaurant.id}
-                      currentUserNickname={user?.nickname}
-                      onUpdated={handleReviewUpdated}
-                      onDeleted={handleReviewDeleted}
-                    />
-                    {/* 도움돼요 버튼 — 카드 아래 */}
-                    <div
-                      className="review-footer"
-                      style={{ padding: "0 24px 16px" }}
-                    >
-                      <button
-                        className={
-                          "review-action-btn" +
-                          (helpfulClicked[review.id] ? " helpful-active" : "")
-                        }
-                        onClick={() => handleHelpful(review.id)}
-                      >
-                        <LuThumbsUp size={13} />
-                        도움돼요 {review.helpfulCount ?? 0}
-                      </button>
-                    </div>
-                  </div>
+                  <ReviewCard
+                    key={review.id}
+                    review={review}
+                    restaurantId={restaurant.id}
+                    currentUserNickname={user?.nickname}
+                    helpfulActive={!!helpfulClicked[review.id]}
+                    onHelpful={() => handleHelpful(review.id)}
+                    onUpdated={handleReviewUpdated}
+                    onDeleted={handleReviewDeleted}
+                  />
                 ))}
               </div>
 

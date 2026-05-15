@@ -113,11 +113,10 @@ function SearchPage({ onRestaurantClick }) {
       restaurantCategory.includes(keyword) ||
       restaurantMenu.includes(keyword);
 
-    // situations 필터: 식당에 situations 정보가 있으면 필터, 없으면 전체 노출
+    // situations 필터: 선택한 태그가 하나라도 식당 situations에 포함되어야 통과
     const restaurantSituations = restaurant.situations || [];
     const matchSituation =
       selectedSituations.length === 0 ||
-      restaurantSituations.length === 0 ||
       selectedSituations.some((s) => restaurantSituations.includes(s));
 
     return matchRegion && matchCategory && matchKeyword && matchSituation;

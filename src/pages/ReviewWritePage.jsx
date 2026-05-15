@@ -1,22 +1,23 @@
-import { useState } from "react"; // ✅ useRef 제거
+import { useState, useEffect } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
-import { LuSparkles } from "react-icons/lu"; // ✅ LuUpload, LuX 제거
+import { LuSparkles } from "react-icons/lu";
 import Button from "../components/common/Button";
 import "./ReviewWritePage.css";
 import PhotoUploader from "../components/restaurant/PhotoUploader";
+import { createReview, getReviewsByRestaurant } from "../api/reviewAPI";
 
+// 검색 페이지 상황/테마 태그와 동일한 값으로 통일
 const TAGS = [
-  "친절함",
-  "분위기좋음",
-  "주차가능",
-  "데이트추천",
-  "가성비",
-  "재방문",
-  "주차편함",
-  "혼밥가능",
-  "웨이팅있음",
-  "재방문의사",
+  { label: "혼밥가능", value: "혼밥가능" },
+  { label: "분위기좋음", value: "분위기좋음" },
+  { label: "주차가능", value: "주차가능" },
+  { label: "데이트추천", value: "데이트추천" },
+  { label: "가성비", value: "가성비" },
+  { label: "재방문의사", value: "재방문의사" },
+  { label: "주차편함", value: "주차편함" },
+  { label: "웨이팅있음", value: "웨이팅있음" },
+  { label: "친절함", value: "친절함" },
 ];
 
 const AI_SUGGESTIONS = [
@@ -27,23 +28,42 @@ const AI_SUGGESTIONS = [
   "재료가 신선하고 요리 실력이 뛰어난 것 같아요. 처음 와봤는데 이미 단골이 될 것 같은 느낌입니다. 메뉴 구성도 다양하고 가격도 합리적입니다.",
 ];
 
-const ReviewWritePage = ({ restaurant, user, onClose }) => {
+const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [text, setText] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState(restaurant?.name || "");
-  const [imageUrls, setImageUrls] = useState([]); //
+  const [imageUrls, setImageUrls] = useState([]);
+  const [showAiSuggestions, setShowAiSuggestions] = useState(false);
+  const [alreadyReviewed, setAlreadyReviewed] = useState(false);
+  const [checkingReview, setCheckingReview] = useState(true);
 
-  // ✅ handleImageUpload, removeImage 제거
+  // 이미 리뷰 작성 여부 확인
+  useEffect(() => {
+    if (!restaurant?.id || !user?.nickname) {
+      setCheckingReview(false);
+      return;
+    }
+    getReviewsByRestaurant(restaurant.id)
+      .then((reviews) => {
+        const already = Array.isArray(reviews) && reviews.some(
+          (r) => r.nickname === user.nickname
+        );
+        setAlreadyReviewed(already);
+      })
+      .catch(() => {})
+      .finally(() => setCheckingReview(false));
+  }, [restaurant?.id, user?.nickname]);
 
-  const toggleTag = (tag) => {
+  const toggleTag = (value) => {
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+      prev.includes(value) ? prev.filter((t) => t !== value) : [...prev, value],
     );
   };
 
   const handleSubmit = async () => {
+    if (alreadyReviewed) return alert("이미 이 가게에 리뷰를 작성하셨습니다.");
     if (!rating) return alert("별점을 선택해주세요.");
     if (text.trim().length < 10) return alert("리뷰를 10자 이상 작성해주세요.");
     if (!restaurant?.id) return alert("식당 정보가 없습니다.");
@@ -55,16 +75,14 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
         memberId: user.id,
         rating,
         content: text,
-        revisit:
-          selectedTags.includes("재방문") || selectedTags.includes("재방문의사")
-            ? "Y"
-            : "N",
+        revisit: selectedTags.includes("재방문의사") ? "Y" : "N",
         receiptUrl: null,
         imageUrls: [],
         situations: selectedTags,
       });
       alert("리뷰가 등록되었습니다!");
-      onClose();
+      if (onReviewSubmitted) onReviewSubmitted();
+      else onClose();
     } catch (err) {
       alert(err.message || "리뷰 등록에 실패했습니다.");
     }
@@ -79,6 +97,47 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
     "좋아요",
     "최고예요!",
   ];
+
+  if (checkingReview) {
+    return (
+      <div className="review-write-page">
+        <div className="rwp-nav">
+          <button className="rwp-back-btn" onClick={onClose}>
+            <IoArrowBack size={18} />
+            돌아가기
+          </button>
+          <span className="rwp-nav-title">리뷰 작성</span>
+          <div style={{ width: 80 }} />
+        </div>
+        <div className="rwp-body" style={{ textAlign: "center", padding: "60px 0" }}>
+          <p>확인 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (alreadyReviewed) {
+    return (
+      <div className="review-write-page" style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        <div className="rwp-nav">
+          <button className="rwp-back-btn" onClick={onClose}>
+            <IoArrowBack size={18} />
+            돌아가기
+          </button>
+          <span className="rwp-nav-title">리뷰 작성</span>
+          <div style={{ width: 80 }} />
+        </div>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 20px" }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>✍️</div>
+          <p style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>이미 리뷰를 작성하셨어요!</p>
+          <p style={{ color: "#a0917f", fontSize: 14, marginBottom: 24, textAlign: "center" }}>
+            같은 가게에는 아이디당 1개의 리뷰만 작성할 수 있습니다.
+          </p>
+          <Button variant="primary" size="md" onClick={onClose}>돌아가기</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="review-write-page">
@@ -191,15 +250,15 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
             이 장소의 특징 중 맞는 것을 나타내는 태그를 선택하세요
           </p>
           <div className="rwp-tags">
-            {TAGS.map((tag) => (
+            {TAGS.map(({ label, value }) => (
               <button
-                key={tag}
+                key={value}
                 className={
-                  "rwp-tag" + (selectedTags.includes(tag) ? " selected" : "")
+                  "rwp-tag" + (selectedTags.includes(value) ? " selected" : "")
                 }
-                onClick={() => toggleTag(tag)}
+                onClick={() => toggleTag(value)}
               >
-                {tag}
+                {label}
               </button>
             ))}
           </div>
