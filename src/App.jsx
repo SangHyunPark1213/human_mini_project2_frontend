@@ -14,6 +14,7 @@ function AppInner() {
   const [modal, setModal] = useState(null);
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [writingReview, setWritingReview] = useState(false);
+  const [reviewRefreshKey, setReviewRefreshKey] = useState(0);
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem("loginUser");
     return saved ? JSON.parse(saved) : null;
@@ -46,6 +47,10 @@ function AppInner() {
         restaurant={selectedRestaurant}
         user={user}
         onClose={() => setWritingReview(false)}
+        onReviewSubmitted={() => {
+          setReviewRefreshKey((k) => k + 1);
+          setWritingReview(false);
+        }}
       />
     );
   }
@@ -58,6 +63,7 @@ function AppInner() {
         <RestaurantDetailPage
           restaurant={selectedRestaurant}
           user={user}
+          refreshKey={reviewRefreshKey}
           onClose={() => setSelectedRestaurant(null)}
           onWriteReview={() => {
             if (!user) {

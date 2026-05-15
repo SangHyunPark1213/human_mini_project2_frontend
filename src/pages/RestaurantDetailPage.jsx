@@ -373,7 +373,20 @@ const ReviewCard = ({
         </div>
       )}
 
-
+      {/* 도움돼요 버튼 — 카드 내부 footer */}
+      {!editing && (
+        <div className="review-footer">
+          <button
+            className={
+              "review-action-btn" + (helpfulActive ? " helpful-active" : "")
+            }
+            onClick={onHelpful}
+          >
+            <LuThumbsUp size={13} />
+            도움돼요 {review.helpfulCount ?? 0}
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -385,6 +398,7 @@ const RestaurantDetailPage = ({
   onWriteReview,
   isAdmin = false,
   user,
+  refreshKey = 0,
 }) => {
   const [reviews, setReviews] = useState([]);
   const [reviewLoading, setReviewLoading] = useState(true);
@@ -410,7 +424,7 @@ const RestaurantDetailPage = ({
       .then((data) => setReviews(Array.isArray(data) ? data : []))
       .catch(() => setReviews([]))
       .finally(() => setReviewLoading(false));
-  }, [restaurant.id]);
+  }, [restaurant.id, refreshKey]);
 
   const sortedReviews = [...reviews].sort((a, b) => {
     if (sortType === "helpful")

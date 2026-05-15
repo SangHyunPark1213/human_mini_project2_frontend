@@ -1,10 +1,11 @@
-import { useState } from "react"; // ✅ useRef 제거
+import { useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
 import { FaStar } from "react-icons/fa";
-import { LuSparkles } from "react-icons/lu"; // ✅ LuUpload, LuX 제거
+import { LuSparkles } from "react-icons/lu";
 import Button from "../components/common/Button";
 import "./ReviewWritePage.css";
 import PhotoUploader from "../components/restaurant/PhotoUploader";
+import { createReview } from "../api/reviewAPI";
 
 const TAGS = [
   "친절함",
@@ -27,15 +28,14 @@ const AI_SUGGESTIONS = [
   "재료가 신선하고 요리 실력이 뛰어난 것 같아요. 처음 와봤는데 이미 단골이 될 것 같은 느낌입니다. 메뉴 구성도 다양하고 가격도 합리적입니다.",
 ];
 
-const ReviewWritePage = ({ restaurant, user, onClose }) => {
+const ReviewWritePage = ({ restaurant, user, onClose, onReviewSubmitted }) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [text, setText] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
   const [searchQuery, setSearchQuery] = useState(restaurant?.name || "");
-  const [imageUrls, setImageUrls] = useState([]); //
-
-  // ✅ handleImageUpload, removeImage 제거
+  const [imageUrls, setImageUrls] = useState([]);
+  const [showAiSuggestions, setShowAiSuggestions] = useState(false);
 
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
@@ -64,7 +64,8 @@ const ReviewWritePage = ({ restaurant, user, onClose }) => {
         situations: selectedTags,
       });
       alert("리뷰가 등록되었습니다!");
-      onClose();
+      if (onReviewSubmitted) onReviewSubmitted();
+      else onClose();
     } catch (err) {
       alert(err.message || "리뷰 등록에 실패했습니다.");
     }
