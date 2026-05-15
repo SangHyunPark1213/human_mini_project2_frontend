@@ -285,7 +285,7 @@ function SearchPage({ onRestaurantClick }) {
                 <RestaurantCard
                   key={restaurant.id}
                   restaurant={normalized}
-                  onClick={onRestaurantClick || (() => {})}
+                  onClick={() => (onRestaurantClick || (() => {}))(restaurant)}
                 />
               );
             })}

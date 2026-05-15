@@ -141,7 +141,6 @@
 
 .category-container button p {
   font-size: 20px;
-  
 }
 
 .popular_menu_list {
@@ -188,6 +187,8 @@
 .rank-card-wrap {
   position: relative;
   width: 323px;
+  display: flex; /* ← 추가 */
+  flex-direction: column; /* ← 추가 */
 }
 
 .rank-badge {
@@ -245,7 +246,9 @@
   color: #888;
   font-size: 15px;
 }
-.error-state { color: #e74c3c; }
+.error-state {
+  color: #e74c3c;
+}
 
 /* ── 최근 등록된 맛집 섹션 ── */
 .recent-restaurant-list {
@@ -392,13 +395,15 @@
   cursor: pointer;
   text-align: left;
   padding: 0;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .recent-slide-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 28px rgba(0,0,0,0.12);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
 }
 
 .recent-slide-img {
@@ -426,7 +431,7 @@
   position: absolute;
   bottom: 8px;
   left: 8px;
-  background: rgba(0,0,0,0.62);
+  background: rgba(0, 0, 0, 0.62);
   color: #ffe066;
   font-size: 12px;
   font-weight: 700;
@@ -466,7 +471,7 @@
   border-radius: 50%;
   border: none;
   background: white;
-  box-shadow: 0 3px 14px rgba(0,0,0,0.16);
+  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.16);
   font-size: 22px;
   font-weight: 700;
   color: #333;
@@ -474,7 +479,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.18s, color 0.18s, opacity 0.18s;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    opacity 0.18s;
   line-height: 1;
 }
 
@@ -488,5 +496,9 @@
   pointer-events: none;
 }
 
-.slider-arrow-left  { left: 4px; }
-.slider-arrow-right { right: 4px; }
+.slider-arrow-left {
+  left: 4px;
+}
+.slider-arrow-right {
+  right: 4px;
+}
