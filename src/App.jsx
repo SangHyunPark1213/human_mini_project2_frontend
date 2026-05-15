@@ -16,7 +16,7 @@ function AppInner() {
   const [writingReview, setWritingReview] = useState(false);
   const [reviewRefreshKey, setReviewRefreshKey] = useState(0);
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("loginUser");
+    const saved = sessionStorage.getItem("loginUser");
     return saved ? JSON.parse(saved) : null;
   });
 
@@ -24,14 +24,14 @@ function AppInner() {
 
   const handleLoginSuccess = (userData) => {
     setUser(userData);
-    localStorage.setItem("loginUser", JSON.stringify(userData));
+    sessionStorage.setItem("loginUser", JSON.stringify(userData));
     setModal(null);
     navigate("/");
   };
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem("loginUser");
+    sessionStorage.removeItem("loginUser");
     setModal(null);
     setSelectedRestaurant(null);
     setWritingReview(false);
@@ -83,7 +83,7 @@ function AppInner() {
             onClose={() => setModal(null)}
             onLoginSuccess={(userData) => {
               setUser(userData);
-              localStorage.setItem("loginUser", JSON.stringify(userData));
+              sessionStorage.setItem("loginUser", JSON.stringify(userData));
               setModal(null);
               setWritingReview(true);
             }}
