@@ -408,11 +408,13 @@ const RestaurantDetailPage = ({
   isAdmin = false,
   user,
   refreshKey = 0,
+  helpfulClicked = {},
+  onHelpfulChange,
+  onReviewDeleted,
 }) => {
   const [reviews, setReviews] = useState([]);
   const [reviewLoading, setReviewLoading] = useState(true);
   const [sortType, setSortType] = useState("latest");
-  const [helpfulClicked, setHelpfulClicked] = useState({});
   const [reviewPage, setReviewPage] = useState(1);
 
   if (!restaurant) return null;
@@ -484,8 +486,12 @@ const RestaurantDetailPage = ({
     .map((m) => m.trim());
 
   const handleHelpful = async (reviewId) => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
     const wasClicked = helpfulClicked[reviewId];
-    setHelpfulClicked((prev) => ({ ...prev, [reviewId]: !wasClicked }));
+    onHelpfulChange((prev) => ({ ...prev, [reviewId]: !wasClicked }));
     setReviews((prev) =>
       prev.map((r) =>
         r.id === reviewId
@@ -499,7 +505,15 @@ const RestaurantDetailPage = ({
     try {
       await toggleHelpful(reviewId);
     } catch {
-      /* 미인증 무시 */
+      // API 실패 시 롤백
+      onHelpfulChange((prev) => ({ ...prev, [reviewId]: wasClicked }));
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.id === reviewId
+            ? { ...r, helpfulCount: (r.helpfulCount ?? 0) + (wasClicked ? 1 : -1) }
+            : r,
+        ),
+      );
     }
   };
 
@@ -522,6 +536,7 @@ const RestaurantDetailPage = ({
       );
       return updated;
     });
+    if (onReviewDeleted) onReviewDeleted();
   };
 
   return (
