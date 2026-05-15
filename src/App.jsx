@@ -26,12 +26,16 @@ function AppInner() {
     setUser(userData);
     localStorage.setItem("loginUser", JSON.stringify(userData));
     setModal(null);
+    navigate("/");
   };
 
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem("loginUser");
     setModal(null);
+    setSelectedRestaurant(null);
+    setWritingReview(false);
+    navigate("/");
   };
 
   const handleRestaurantClick = (restaurant) => {
@@ -78,7 +82,9 @@ function AppInner() {
             mode={modal}
             onClose={() => setModal(null)}
             onLoginSuccess={(userData) => {
-              handleLoginSuccess(userData);
+              setUser(userData);
+              localStorage.setItem("loginUser", JSON.stringify(userData));
+              setModal(null);
               setWritingReview(true);
             }}
             onSwitchMode={setModal}
