@@ -8,6 +8,7 @@ import MainPage from "./pages/MainPage";
 import RestaurantDetailPage from "./pages/RestaurantDetailPage";
 import ReviewWritePage from "./pages/ReviewWritePage";
 import SearchPage from "./pages/SearchPage";
+import { getRestaurantById } from "./api/restaurantAPI";
 
 // BrowserRouter 내부에서 동작하는 실제 앱 컴포넌트
 function AppInner() {
@@ -51,9 +52,13 @@ function AppInner() {
         restaurant={selectedRestaurant}
         user={user}
         onClose={() => setWritingReview(false)}
-        onReviewSubmitted={() => {
+        onReviewSubmitted={async () => {
           setReviewRefreshKey((k) => k + 1);
           setWritingReview(false);
+          try {
+            const updated = await getRestaurantById(selectedRestaurant.id);
+            setSelectedRestaurant(updated);
+          } catch {}
         }}
       />
     );

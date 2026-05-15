@@ -333,7 +333,7 @@ function MainPages({ onRestaurantClick }) {
                   <div className="rank-badge">#{index + 1}</div>
                   <RestaurantCard
                     restaurant={normalizeRestaurant(restaurant)}
-                    onClick={onRestaurantClick}
+                    onClick={() => onRestaurantClick(restaurant)}
                   />
                 </div>
               ))}

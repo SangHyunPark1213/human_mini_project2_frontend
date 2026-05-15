@@ -12,6 +12,7 @@ import {
   LuCheck,
   LuX,
 } from "react-icons/lu";
+import { LuShieldCheck } from "react-icons/lu";
 
 import "./RestaurantDetailPage.css";
 import {
@@ -271,6 +272,12 @@ const ReviewCard = ({
           <div className="review-user-row">
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <div className="review-nickname">{review.nickname || "익명"}</div>
+              <span className="review-verified-badge">
+                <span className="verified-icon">
+                  <LuShieldCheck size={15} strokeWidth={2.2} />
+                </span>
+                영수증 인증
+              </span>
               {review.modified && (
                 <span className="review-modified-badge">(수정됨)</span>
               )}
@@ -408,10 +415,19 @@ const RestaurantDetailPage = ({
 
   if (!restaurant) return null;
 
+  // snake_case / camelCase 둘 다 대응 (관리자 페이지 등 다양한 출처 지원)
+  const normalized = {
+    ...restaurant,
+    averageRating: restaurant.averageRating ?? restaurant.average_rating ?? 0,
+    reviewCount: restaurant.reviewCount ?? restaurant.review_count ?? 0,
+    popularMenu: restaurant.popularMenu ?? restaurant.popular_menu ?? "",
+    address: restaurant.address ?? restaurant.location ?? "",
+    thumbnail: restaurant.thumbnail ?? restaurant.image ?? "",
+  };
+
   const fallbackImage =
     "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200";
-  // 더미 이미지 제거 — 실제 thumbnail만 사용
-  const mainImage = restaurant.thumbnail || restaurant.image || fallbackImage;
+  const mainImage = normalized.thumbnail || fallbackImage;
 
   useEffect(() => {
     if (!restaurant.id) {
@@ -438,8 +454,8 @@ const RestaurantDetailPage = ({
     reviewPage * REVIEWS_PER_PAGE,
   );
 
-  const totalReviews = restaurant.reviewCount ?? sortedReviews.length;
-  const avgRating = restaurant.averageRating ?? 0;
+  const totalReviews = normalized.reviewCount ?? sortedReviews.length;
+  const avgRating = normalized.averageRating ?? 0;
 
   const ratingDist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
   sortedReviews.forEach((r) => {
@@ -458,7 +474,7 @@ const RestaurantDetailPage = ({
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8);
 
-  const menus = (restaurant.popularMenu || "대표메뉴")
+  const menus = (normalized.popularMenu || "대표메뉴")
     .split(",")
     .map((m) => m.trim());
 
@@ -489,7 +505,18 @@ const RestaurantDetailPage = ({
   };
 
   const handleReviewDeleted = (reviewId) => {
-    setReviews((prev) => prev.filter((r) => r.id !== reviewId));
+    setReviews((prev) => {
+      const updated = prev.filter((r) => r.id !== reviewId);
+      const newTotalPages = Math.ceil(updated.length / REVIEWS_PER_PAGE);
+      setReviewPage((p) =>
+        p > newTotalPages && newTotalPages > 0
+          ? newTotalPages
+          : p === 0
+            ? 1
+            : p,
+      );
+      return updated;
+    });
   };
 
   return (
@@ -509,15 +536,15 @@ const RestaurantDetailPage = ({
       <div className="gallery-single">
         <img
           src={mainImage}
-          alt={restaurant.name}
+          alt={normalized.name}
           onError={(e) => {
             e.currentTarget.src = fallbackImage;
           }}
         />
         <div className="gallery-overlay">
           <div className="gallery-info">
-            <h1>{restaurant.name}</h1>
-            <p>{restaurant.category}</p>
+            <h1>{normalized.name}</h1>
+            <p>{normalized.category}</p>
           </div>
         </div>
       </div>
@@ -526,9 +553,9 @@ const RestaurantDetailPage = ({
         {/* 정보 */}
         <section className="info-card">
           <div className="info-name-header">
-            <h2 className="info-restaurant-name">{restaurant.name}</h2>
+            <h2 className="info-restaurant-name">{normalized.name}</h2>
             <span className="info-restaurant-category">
-              {restaurant.category}
+              {normalized.category}
             </span>
           </div>
           <div className="info-rating-row">
@@ -542,7 +569,7 @@ const RestaurantDetailPage = ({
               <div>
                 <p className="info-item-label">주소</p>
                 <p className="info-item-value">
-                  {restaurant.address || "정보 없음"}
+                  {normalized.address || "정보 없음"}
                 </p>
               </div>
             </div>
@@ -551,7 +578,7 @@ const RestaurantDetailPage = ({
               <div>
                 <p className="info-item-label">전화번호</p>
                 <p className="info-item-value">
-                  {restaurant.phone || "정보 없음"}
+                  {normalized.phone || "정보 없음"}
                 </p>
               </div>
             </div>
@@ -560,7 +587,7 @@ const RestaurantDetailPage = ({
               <div>
                 <p className="info-item-label">영업시간</p>
                 <p className="info-item-value">
-                  {restaurant.hours || "정보 없음"}
+                  {normalized.hours || "정보 없음"}
                 </p>
               </div>
             </div>
@@ -569,15 +596,15 @@ const RestaurantDetailPage = ({
               <div>
                 <p className="info-item-label">가격대</p>
                 <p className="info-item-value">
-                  {restaurant.priceRange || "정보 없음"}
+                  {normalized.priceRange || "정보 없음"}
                 </p>
               </div>
             </div>
           </div>
-          {restaurant.description && (
+          {normalized.description && (
             <div className="description-section">
               <p className="menu-section-label">가게 소개</p>
-              <p className="description-text">{restaurant.description}</p>
+              <p className="description-text">{normalized.description}</p>
             </div>
           )}
           <div className="menu-section">
@@ -597,15 +624,15 @@ const RestaurantDetailPage = ({
           <div className="map-header">
             <h2 className="section-title">위치</h2>
             <p className="map-address">
-              {restaurant.address || "주소 정보 없음"}
+              {normalized.address || "주소 정보 없음"}
             </p>
           </div>
           <div className="map-container">
             <KakaoMap
-              address={restaurant.address}
-              name={restaurant.name}
-              latitude={restaurant.latitude}
-              longitude={restaurant.longitude}
+              address={normalized.address}
+              name={normalized.name}
+              latitude={normalized.latitude}
+              longitude={normalized.longitude}
             />
           </div>
         </section>
@@ -628,7 +655,9 @@ const RestaurantDetailPage = ({
             <div className="analysis-col">
               <p className="analysis-label">평균 별점</p>
               <div style={{ textAlign: "center", padding: "20px 0" }}>
-                <div style={{ fontSize: 48, fontWeight: 800, color: "#ff6b35" }}>
+                <div
+                  style={{ fontSize: 48, fontWeight: 800, color: "#ff6b35" }}
+                >
                   {Number(avgRating).toFixed(1)}
                 </div>
                 <StarRating rating={avgRating} size={20} />
