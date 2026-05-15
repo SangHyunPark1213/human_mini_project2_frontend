@@ -272,12 +272,14 @@ const ReviewCard = ({
           <div className="review-user-row">
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <div className="review-nickname">{review.nickname || "익명"}</div>
-              <span className="review-verified-badge">
-                <span className="verified-icon">
-                  <LuShieldCheck size={15} strokeWidth={2.2} />
+              {review.verificationStatus === "A" && (
+                <span className="review-verified-badge">
+                  <span className="verified-icon">
+                    <LuShieldCheck size={15} strokeWidth={2.2} />
+                  </span>
+                  영수증 인증
                 </span>
-                영수증 인증
-              </span>
+              )}
               {review.modified && (
                 <span className="review-modified-badge">(수정됨)</span>
               )}
@@ -454,8 +456,11 @@ const RestaurantDetailPage = ({
     reviewPage * REVIEWS_PER_PAGE,
   );
 
-  const totalReviews = normalized.reviewCount ?? sortedReviews.length;
-  const avgRating = normalized.averageRating ?? 0;
+  const totalReviews = reviews.length;
+  const avgRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + (r.rating ?? 0), 0) / reviews.length
+      : 0;
 
   const ratingDist = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
   sortedReviews.forEach((r) => {
