@@ -408,22 +408,14 @@ const RestaurantDetailPage = ({
   isAdmin = false,
   user,
   refreshKey = 0,
+  helpfulClicked = {},
+  onHelpfulChange,
+  onReviewDeleted,
 }) => {
   const [reviews, setReviews] = useState([]);
   const [reviewLoading, setReviewLoading] = useState(true);
   const [sortType, setSortType] = useState("latest");
   const [reviewPage, setReviewPage] = useState(1);
-
-  // 도움돼요 상태를 localStorage에 유저별로 저장해서 페이지 이동 후에도 유지
-  const helpfulKey = `helpful_${user?.id ?? "guest"}_${restaurant?.id}`;
-  const [helpfulClicked, setHelpfulClicked] = useState(() => {
-    try {
-      const saved = localStorage.getItem(helpfulKey);
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  });
 
   if (!restaurant) return null;
 
@@ -494,13 +486,12 @@ const RestaurantDetailPage = ({
     .map((m) => m.trim());
 
   const handleHelpful = async (reviewId) => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
     const wasClicked = helpfulClicked[reviewId];
-    const next = { ...helpfulClicked, [reviewId]: !wasClicked };
-    setHelpfulClicked(next);
-    // localStorage에 저장해서 페이지 이동 후에도 유지
-    try {
-      localStorage.setItem(helpfulKey, JSON.stringify(next));
-    } catch {}
+    onHelpfulChange((prev) => ({ ...prev, [reviewId]: !wasClicked }));
     setReviews((prev) =>
       prev.map((r) =>
         r.id === reviewId
@@ -514,7 +505,15 @@ const RestaurantDetailPage = ({
     try {
       await toggleHelpful(reviewId);
     } catch {
-      /* 미인증 무시 */
+      // API 실패 시 롤백
+      onHelpfulChange((prev) => ({ ...prev, [reviewId]: wasClicked }));
+      setReviews((prev) =>
+        prev.map((r) =>
+          r.id === reviewId
+            ? { ...r, helpfulCount: (r.helpfulCount ?? 0) + (wasClicked ? 1 : -1) }
+            : r,
+        ),
+      );
     }
   };
 
@@ -537,6 +536,7 @@ const RestaurantDetailPage = ({
       );
       return updated;
     });
+    if (onReviewDeleted) onReviewDeleted();
   };
 
   return (

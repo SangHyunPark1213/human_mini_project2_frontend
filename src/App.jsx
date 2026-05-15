@@ -16,6 +16,22 @@ function AppInner() {
   const [selectedRestaurant, setSelectedRestaurant] = useState(null);
   const [writingReview, setWritingReview] = useState(false);
   const [reviewRefreshKey, setReviewRefreshKey] = useState(0);
+  const [helpfulClicked, setHelpfulClicked] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem("helpfulClicked");
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const handleHelpfulChange = (updater) => {
+    setHelpfulClicked((prev) => {
+      const next = typeof updater === "function" ? updater(prev) : updater;
+      try { sessionStorage.setItem("helpfulClicked", JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
   const [user, setUser] = useState(() => {
     const saved = sessionStorage.getItem("loginUser");
     return saved ? JSON.parse(saved) : null;
@@ -36,6 +52,8 @@ function AppInner() {
     setModal(null);
     setSelectedRestaurant(null);
     setWritingReview(false);
+    setHelpfulClicked({});
+    try { sessionStorage.removeItem("helpfulClicked"); } catch {}
     navigate("/");
   };
 
@@ -66,14 +84,21 @@ function AppInner() {
 
   // 식당 상세 페이지
   if (selectedRestaurant) {
-    window.scrollTo(0, 0);
     return (
       <>
         <RestaurantDetailPage
           restaurant={selectedRestaurant}
           user={user}
           refreshKey={reviewRefreshKey}
+          helpfulClicked={helpfulClicked}
+          onHelpfulChange={handleHelpfulChange}
           onClose={() => setSelectedRestaurant(null)}
+          onReviewDeleted={async () => {
+            try {
+              const updated = await getRestaurantById(selectedRestaurant.id);
+              setSelectedRestaurant(updated);
+            } catch {}
+          }}
           onWriteReview={() => {
             if (!user) {
               setModal("login");
