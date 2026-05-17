@@ -124,7 +124,7 @@ function MainPages({ onRestaurantClick }) {
   }, []);
 
   const dongList = {
-    dongnam: [
+    동남구: [
       "다가동",
       "광덕면",
       "구성동",
@@ -161,7 +161,7 @@ function MainPages({ onRestaurantClick }) {
       "청수동",
       "풍세면",
     ],
-    seobuk: [
+    서북구: [
       "두정동",
       "백석동",
       "부대동",
@@ -240,8 +240,8 @@ function MainPages({ onRestaurantClick }) {
                   }}
                 >
                   <option value="">구 선택</option>
-                  <option value="dongnam">동남구</option>
-                  <option value="seobuk">서북구</option>
+                  <option value="동남구">동남구</option>
+                  <option value="서북구">서북구</option>
                 </select>
                 <select
                   className="dong-select"

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import RestaurantCard from "../components/restaurant/RestaurantCard";
 import { FaAngleDown } from "react-icons/fa";
 import { getRestaurants } from "../api/restaurantAPI";
+import { getReviewsByRestaurant } from "../api/reviewAPI";
 
 // 리뷰 작성 분위기 태그와 동일하게 맞춘 상황/테마 목록
 const SITUATION_TAGS = [
@@ -33,7 +34,10 @@ function SearchPage({ onRestaurantClick }) {
   const [selectedSituations, setSelectedSituations] = useState([]);
   const [sortType, setSortType] = useState("latest");
   const [restaurants, setRestaurants] = useState([]);
+  // restaurantId -> string[] 형태로 situations 캐시
+  const [situationsMap, setSituationsMap] = useState({});
   const [loading, setLoading] = useState(true);
+  const [situationsLoading, setSituationsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const dongList = {
@@ -63,20 +67,53 @@ function SearchPage({ onRestaurantClick }) {
     region === "천안전체" ? "" : region
   );
 
-  // 백엔드에서 식당 목록 가져오기 (카테고리 변경 시 재조회)
+  // 백엔드에서 식당 목록 가져오기
   useEffect(() => {
     setLoading(true);
     setError(null);
+    setSituationsMap({});
     getRestaurants(selectedCategory || undefined)
-      .then((data) => {
-        setRestaurants(Array.isArray(data) ? data : []);
+      .then(async (data) => {
+        const list = Array.isArray(data) ? data : [];
+        setRestaurants(list);
+        setLoading(false);
+
+        // 식당 목록 로드 완료 후 각 식당의 리뷰에서 situations 집계
+        if (list.length > 0) {
+          setSituationsLoading(true);
+          const results = await Promise.allSettled(
+            list.map((r) =>
+              getReviewsByRestaurant(r.id).then((reviews) => ({
+                id: r.id,
+                situations: Array.isArray(reviews)
+                  ? [
+                      ...new Set(
+                        reviews.flatMap((rv) =>
+                          Array.isArray(rv.situations) ? rv.situations : []
+                        )
+                      ),
+                    ]
+                  : [],
+              }))
+            )
+          );
+
+          const map = {};
+          results.forEach((result) => {
+            if (result.status === "fulfilled") {
+              map[result.value.id] = result.value.situations;
+            }
+          });
+          setSituationsMap(map);
+          setSituationsLoading(false);
+        }
       })
       .catch((err) => {
         console.error("식당 목록 조회 실패:", err);
         setError("식당 목록을 불러오는데 실패했습니다.");
         setRestaurants([]);
-      })
-      .finally(() => setLoading(false));
+        setLoading(false);
+      });
   }, [selectedCategory]);
 
   const toggleSituation = (situation) => {
@@ -113,8 +150,11 @@ function SearchPage({ onRestaurantClick }) {
       restaurantCategory.includes(keyword) ||
       restaurantMenu.includes(keyword);
 
-    // situations 필터: 선택한 태그가 하나라도 식당 situations에 포함되어야 통과
-    const restaurantSituations = restaurant.situations || [];
+    // situations: 리뷰에서 집계한 situationsMap 우선 사용
+    const restaurantSituations =
+      situationsMap[restaurant.id] ||
+      restaurant.situations ||
+      [];
     const matchSituation =
       selectedSituations.length === 0 ||
       selectedSituations.some((s) => restaurantSituations.includes(s));
@@ -212,7 +252,14 @@ function SearchPage({ onRestaurantClick }) {
         </div>
 
         <div className="filter-group">
-          <p className="filter-title">상황 / 테마</p>
+          <p className="filter-title">
+            상황 / 테마
+            {situationsLoading && (
+              <span style={{ marginLeft: 8, fontSize: 11, color: "#aaa", fontWeight: 400 }}>
+                (태그 불러오는 중...)
+              </span>
+            )}
+          </p>
           {SITUATION_TAGS.map(({ label, value }) => (
             <button
               key={value}

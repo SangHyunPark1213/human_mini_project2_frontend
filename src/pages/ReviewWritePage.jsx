@@ -9,16 +9,20 @@ import { createReview, getReviewsByRestaurant } from "../api/reviewAPI";
 // uploadImage 단건 함수도 추가 (영수증은 단건)
 import { uploadImages, uploadImage } from "../firebase/uploadImage";
 
+// SearchPage의 SITUATION_TAGS와 동일하게 맞춤 (필터 연동을 위해)
 const TAGS = [
-  { label: "혼밥가능", value: "혼밥가능" },
-  { label: "분위기좋음", value: "분위기좋음" },
-  { label: "주차가능", value: "주차가능" },
-  { label: "데이트추천", value: "데이트추천" },
-  { label: "가성비", value: "가성비" },
-  { label: "재방문의사", value: "재방문의사" },
-  { label: "주차편함", value: "주차편함" },
-  { label: "웨이팅있음", value: "웨이팅있음" },
-  { label: "친절함", value: "친절함" },
+  { label: "🍱 혼밥가능", value: "혼밥가능" },
+  { label: "💑 데이트추천", value: "데이트추천" },
+  { label: "👨‍👩‍👧 가족 모임", value: "가족 모임" },
+  { label: "🍻 친구/회식", value: "친구/회식" },
+  { label: "💰 가성비", value: "가성비" },
+  { label: "🎉 특별한 날", value: "특별한 날" },
+  { label: "🌙 야식/늦은 밤", value: "야식/늦은 밤" },
+  { label: "🤫 조용한 곳", value: "조용한 곳" },
+  { label: "🌅 뷰 맛집", value: "뷰 맛집" },
+  { label: "👥 단체/모임", value: "단체/모임" },
+  { label: "✨ 분위기좋음", value: "분위기좋음" },
+  { label: "🔄 재방문의사", value: "재방문의사" },
 ];
 
 const AI_SUGGESTIONS = [
