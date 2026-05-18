@@ -49,7 +49,7 @@ const Header = ({
                 <button
                   className="btn-admin"
                   onClick={() =>
-                    (window.location.href = "http://localhost:8111/admin")
+                    (window.location.href = "http://192.168.0.169:8111/admin")
                   }
                 >
                   관리자 페이지
